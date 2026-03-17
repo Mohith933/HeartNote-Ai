@@ -558,8 +558,6 @@ padding:10px 14px;
     <p>Writing shaped by real moments.</p>
     <small>© 2025 HeartNote AI. All rights reserved.</small>
   </footer>
-
-  <!-- Signup Modal -->
   <!-- Signup Modal -->
   <div id="signupModal" class="modal">
     {%csrf_token%}
@@ -600,8 +598,14 @@ Continue where your thoughts left off.
   </div>
 </div>
   <script>
+
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register("{% static 'pwa/service-worker.js' %}");
+    window.addEventListener("load", () => {
+        navigator.serviceWorker
+            .register("{% static 'pwa/service-worker.js' %}")
+            .then(() => console.log("Service Worker Registered"))
+            .catch(err => console.log("Service Worker Error:", err));
+    });
 }
 // -----------------------------
 // MODALS
@@ -708,7 +712,8 @@ submitBtn.onclick = async () => {
 
   const res = await fetch("/api/signup/", {
     method: "POST",
-    body: form
+    body: form,
+credentials: "include"
   });
 
   const data = await res.json();
@@ -758,7 +763,8 @@ loginBtn.onclick = async () => {
 
   const res = await fetch("/api/login/", {
     method: "POST",
-    body: form
+    body: form,
+credentials: "include"
   });
 
   const data = await res.json();
