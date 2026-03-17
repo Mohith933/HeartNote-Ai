@@ -1,0 +1,2391 @@
+{%load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <link rel="icon" type="image/png" href="{% static 'icons/icon-192.png' %}">
+    <title>HeartNote AI — Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;600&family=Kalam&family=Dancing+Script:wght@400;600&display=swap"
+        rel="stylesheet">
+    <link rel="manifest" href="{% static 'pwa/manifest.json' %}">
+    <meta name="theme-color" content="#ffffff" id="themeColorMeta">
+    <style>
+        body[data-theme="light"] {
+            --accent: #ff4d6d;
+            --accent-dark: #e63950;
+            --bg: #ffffff;
+            --text: #222222;
+            --card: #fff;
+            --muted: #f9f9f9;
+        }
+
+        body[data-theme="dark"] {
+            --bg: #0d0d0d;
+            --text: #f5f5f5;
+            --card: #1a1a1a;
+            --muted: #141414;
+            --accent: #ff668a;
+            --accent-dark: #ff4d6d;
+        }
+
+        :root[data-font="small"] {
+            font-size: 0.9rem;
+        }
+
+        :root[data-font="medium"] {
+            font-size: 1rem;
+        }
+
+        :root[data-font="large"] {
+            font-size: 1.1rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            transition: background .3s, color .3s;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 230px;
+            background: var(--card);
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--accent);
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo img {
+    width: 48px;
+    margin-left: -10px;
+    margin-right: -15px;
+    margin-bottom: -10px;
+    height: 100%;
+}
+
+        .beta-tag {
+
+            font-size: 0.3rem;
+
+            font-weight: 600;
+
+            padding: 2px 6px;
+
+            border-radius: 6px;
+
+            background: #ff6b9f20;
+            /* soft pink background */
+
+            color: #ff3e7f;
+            /* strong pink text */
+
+            border: 1px solid #ff3e7f40;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.5px;
+
+        }
+
+
+        .menu a {
+            display: block;
+            padding: 12px 14px;
+            border-radius: 10px;
+            color: var(--text);
+            text-decoration: none;
+            margin-bottom: 6px;
+            font-weight: 500;
+            opacity: 0.85;
+            transition: all .2s;
+        }
+
+        .menu a:hover,
+        .menu a.active {
+            background: var(--accent);
+            color: #fff;
+            opacity: 1;
+        }
+
+        .menu-group {
+            margin-bottom: 0.8rem;
+        }
+
+        .dropdown-btn {
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: left;
+            width: 100%;
+            padding: 0.6rem 0.3rem;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .dropdown-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .dropdown-content {
+            display: none;
+            flex-direction: column;
+            margin-left: 10px;
+        }
+
+        .dropdown-content a {
+            display: block;
+            padding: 12px 14px;
+            border-radius: 10px;
+            color: var(--text);
+            text-decoration: none;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            opacity: 0.85;
+            transition: all .2s;
+        }
+
+        .dropdown-content a:hover {
+            background: var(--accent);
+        }
+
+        .upgrade-btn {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .2s;
+        }
+
+        .upgrade-btn:hover {
+            background: var(--accent-dark);
+        }
+
+        /* Main area */
+        .main {
+            margin-left: 230px;
+            flex: 1;
+            padding: 40px 60px;
+            background: var(--muted);
+            min-height: 100vh;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .topbar h1 {
+            color: var(--accent);
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .avatar-container {
+            position: relative;
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #ddd;
+        }
+
+
+        .hidden {
+            display: none;
+        }
+
+        /* --------------------------- */
+        /*   GLOBAL PAGE VIEW STYLES   */
+        /* --------------------------- */
+
+        .pageView {
+            margin: 30px auto;
+            width: 90%;
+            max-width: 650px;
+        }
+
+        .pageView.hidden {
+            display: none;
+        }
+
+        .pageView h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text);
+            text-align: center;
+        }
+
+
+        /* Main Account Page */
+        #accountView {
+            padding: 10px;
+            Width: 100%;
+            margin: 0 auto;
+
+        }
+
+        #accountView h2 {
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* Section Boxes */
+        .section-box {
+            background: var(--card);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+            transition: 0.2s ease;
+        }
+
+        .section-box label {
+            color: var(--text);
+        }
+
+        .section-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Row Layout */
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            font-size: 1rem;
+            color: var(--text);
+        }
+
+        /* Switch Style */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        /* Slider Background */
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            border-radius: 24px;
+            transition: 0.3s;
+        }
+
+        /* Slider Circle */
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        /* ON State */
+        .switch input:checked+.slider {
+            background-color: #ff4f7b;
+        }
+
+        .switch input:checked+.slider:before {
+            transform: translateX(24px);
+        }
+
+
+        .section-box h3 {
+            margin-bottom: 12px;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--text);
+        }
+
+        .section-box p {
+            color: var(--text);
+        }
+
+        /* Avatar */
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 10px 0;
+            display: block;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+        }
+
+        .info-row strong {
+            color: var(--text);
+        }
+
+        #editProfileBtn {
+            margin-top: 14px;
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        #editProfileBtn:hover {
+            opacity: 0.85;
+        }
+
+        /* Inputs */
+        #accountView input,
+        #accountView textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+            transition: 0.2s ease;
+        }
+
+        #accountView input:focus,
+        #accountView textarea:focus {
+            border-color: var(--muted);
+            box-shadow: 0 0 6px rgba(255, 79, 123, 0.3);
+        }
+
+        /* Save and Logout Buttons */
+        #accountView button {
+            padding: 12px 16px;
+            background: #ff4f7b;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+            transition: 0.2s ease;
+        }
+
+        #accountView button:hover {
+            background: #ff355f;
+        }
+
+        /* Small About Text */
+        .about-small {
+            margin-top: 12px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Back Button */
+        .back {
+            background: transparent;
+            border: none;
+            font-size: 16px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            color: var(--accent);
+        }
+
+        .tool-list {
+            display: none;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            background: var(--muted);
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .tool-item {
+            background: var(--card);
+            padding: 10px 12px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+        }
+
+        .tool-item:hover {
+            transform: translateY(-2px);
+            background: var(--accent);
+            color: #fff;
+        }
+
+        /* Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            transition: transform .2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+        }
+
+        .card-icon {
+            font-size: 28px;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            font-size: .9rem;
+            opacity: .85;
+        }
+
+        /* Workspace */
+        .workspace {
+            display: none;
+        }
+
+
+
+
+        .workspace.active {
+            display: block;
+        }
+
+
+
+        .form-container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .form-section,
+        .playground-section {
+            background: var(--card);
+            padding: 24px;
+            border-radius: 14px;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .form-section input,
+        .form-section textarea,
+        .form-section select {
+            width: 100%;
+            margin-bottom: 14px;
+            resize: none;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            background: var(--muted);
+            color: var(--text);
+        }
+
+        .form-section label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .copy-btn {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: var(--accent-dark);
+        }
+
+        .generate {
+            background: var(--accent);
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .generate:hover {
+            background: var(--accent-dark);
+        }
+
+        .playground-section h3 {
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .output {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            letter-spacing: 0.3px;
+            white-space: pre-wrap;
+            color: var(--text);
+            padding: 10px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-decoration: none;
+            cursor: pointer;
+            margin-bottom: 10px;
+            /* Smooth animation */
+            transition: color 0.25s ease, transform 0.25s ease, opacity 0.25s ease;
+        }
+
+        .back-btn:hover {
+            color: var(--accent);
+            /* optional */
+            /* soft slide left */
+            opacity: 0.9;
+        }
+
+        .back-btn:active {
+            opacity: 0.7;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            font-size: .9rem;
+            opacity: .7;
+        }
+
+
+
+        .playground-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            /* allows wrapping on small screens */
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .input-group {
+            position: relative;
+            width: 100%;
+        }
+
+        .suggest-topic {
+            position: absolute;
+            right: 5px;
+            top: 10px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 1.2rem;
+            opacity: 0.7;
+            transition: 0.2s ease;
+        }
+
+        .suggest-felling {
+            position: absolute;
+            right: 5px;
+            top: 70px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 1.2rem;
+            opacity: 0.7;
+            transition: 0.2s ease;
+        }
+
+        .suggest-topic {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+        .suggest-felling {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+
+
+        .input-group input,
+        .input-group textarea {
+            flex: 1;
+        }
+
+
+        .copy-btn {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: var(--accent-dark);
+        }
+
+        .recent-section {
+            margin-top: 30px;
+            padding: 15px;
+            background: var(--muted);
+            border-radius: 15px;
+        }
+
+        .recent-section h3 {
+            color: var(--text);
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .recent-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .recent-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card);
+            padding: 10px 12px;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        .recent-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .recent-card:hover {
+            background: var(--card);
+        }
+
+        .recent-icon {
+            font-size: 1.3em;
+        }
+
+        .recent-text p {
+            margin: 0;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .recent-text .preview{
+            margin: top 2px;
+            margin-bottom:2px;
+            display: flex;
+            font-size:0.7rem;
+            flex-direction: column;
+            font-weight:300;
+            color:var(--text);
+        }
+
+        .recent-text small {
+            color: var(--text);
+            font-size: 0.8em;
+        }
+
+        .delete-btn {
+            background: none;
+            /* soft accent tint */
+            border: none;
+            color: var(--accent);
+            font-size: 0.95em;
+            cursor: pointer;
+            padding: 6px 8px;
+            border-radius: 8px;
+            transition: background 0.2s ease, transform 0.15s ease;
+        }
+
+        .delete-btn:hover {
+            background: rgba(255, 77, 109, 0.18);
+            transform: scale(1.05);
+        }
+
+        .recent-item .delete-btn {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .recent-item:hover .delete-btn {
+            opacity: 1;
+        }
+
+
+        .maincardname {
+            margin: 10px;
+        }
+
+        /* Emotion Suggestions Box (Initially Hidden) */
+        .emotion-suggest {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            transition: opacity .3s ease;
+        }
+
+        .emotion-suggest.hidden {
+            display: none;
+        }
+
+        .emotion-suggest button {
+            padding: 6px 10px;
+            font-size: 13px;
+            border-radius: 12px;
+            border: none;
+            background: var(--bg);
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        .emotion-suggest button:hover {
+            background: var(--muted);
+        }
+
+
+        /* Beta Mode UI Style */
+        .beta-ui {
+            letter-spacing: .5px;
+            filter: saturate(1.15);
+            transition: .3s ease;
+        }
+
+        .font-cute {
+            font-family: 'Patrick Hand', cursive;
+        }
+
+        .font-deep {
+            font-family: 'Caveat', cursive;
+        }
+
+        .font-journal {
+            font-family: 'Kalam', cursive;
+        }
+
+        .handwrite-fade {
+            animation: fadeWrite 0.6s ease forwards;
+        }
+
+        .draw-effect {
+            animation: drawText 1s ease;
+        }
+
+        @keyframes fadeWrite {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes drawText {
+            0% {
+                opacity: 0;
+                filter: blur(2px);
+            }
+
+            100% {
+                opacity: 1;
+                filter: blur(0);
+            }
+        }
+
+        .select-style {
+            padding: 5px;
+            border-radius: 20px;
+        }
+
+        .avatar-edit {
+            position: relative;
+            display: inline-block;
+        }
+
+        .edit-badge {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            background: #d0306a;
+            color: white;
+            font-size: 12px;
+            padding: 4px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .hn-popup {
+            position: fixed;
+            top:20px;
+            left: 40%;
+            right:30%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .hn-popup.hidden {
+            display: none;
+        }
+
+        .hn-popup-box {
+            background: var(--bg);
+    border-radius: 16px;
+    padding: 22px;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(255, 105, 135, 0.25);
+ opacity: 0;
+    transform: translateY(-10px) scale(0.97);
+    transition: all 0.25s ease;
+}
+.hn-popup.show .hn-popup-box {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+        .hn-popup-box h3 {
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .hn-popup-box p {
+            color: var(--text);
+            font-size: 14px;
+            margin-bottom: 18px;
+        }
+
+        .hn-popup-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-secondary {
+            flex: 1;
+            background: var(--card);
+            color: var(--text);
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .btn-primary {
+            flex: 1;
+            background: var(--accent);
+            color: var(--text);
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        @media(max-width:768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .festival-popup {
+                left: 50%;
+        font-size: medium;
+            }
+            .hn-popup{
+                left:5%;
+                right:5%;
+            }
+
+            .main {
+                margin: 0;
+                padding: 30px;
+            }
+
+            .form-container {
+                flex-direction: column;
+            }
+
+            .playground-header {
+                justify-content: flex-start;
+            }
+
+            .copy-btn {
+                font-size: 0.85rem;
+                padding: 6px 12px;
+            }
+
+            #accountView {
+                width: 100%;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="hn-popup" class="hn-popup hidden">
+        <div class="hn-popup-box">
+            <h3 id="hn-popup-title"></h3>
+            <p id="hn-popup-message"></p>
+            <div class="hn-popup-actions">
+                <button class="btn-secondary" onclick="closeHeartNotePopup()">Stay</button>
+                <button class="btn-primary" id="hn-popup-confirm">Leave</button>
+            </div>
+        </div>
+    </div>
+
+    
+
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div>
+            <div class="logo">
+    <img src="{% static 'icons/icon-192.png' %}" alt="HeartNote AI Logo">
+    <span>HeartNote AI</span>
+</div>
+            <nav class="menu">
+
+                <!-- 🌞 Group 1: Day-to-Day Life -->
+                <div class="menu-group">
+                    <button class="dropdown-btn">Day-to-Day Life ▾</button>
+                    <div class="dropdown-content">
+                        <a href="#" id="menu-dashboard" onclick="openTool('Dashboard'); setActiveMenu(this)">🏠
+                            Dashboard</a>
+                        <a href="#"
+                            onclick="confirmExitWhileWriting(() => openTool('Reflection')); setActiveMenu(this)">🌿
+                            Reflection</a>
+                        <a href="#" onclick="confirmExitWhileWriting(() => openTool('Journal')); setActiveMenu(this)">📖
+                            Journal</a>
+                    </div>
+                </div>
+
+                <!-- 💞 Group 2: Couples / Emotional Writing -->
+                <div class="menu-group">
+                    <button class="dropdown-btn">Heart & Emotion ▾</button>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="confirmExitWhileWriting(() => openTool('Letters')); setActiveMenu(this)">💌
+                            Letters</a>
+                        <a href="#" onclick="confirmExitWhileWriting(() => openTool('Poems')); setActiveMenu(this)">🪶
+                            Poems</a>
+                        <a href="#" onclick="confirmExitWhileWriting(() => openTool('Story')); setActiveMenu(this)">✨
+                            Story</a>
+                    </div>
+                </div>
+                <div class="menu-group">
+    <button class="dropdown-btn">Emotional Insight ▾</button>
+
+    <div class="dropdown-content">
+        <a href="#" onclick="confirmExitWhileWriting(() => openTool('Messages')); setActiveMenu(this)">
+            💬 Messages
+        </a>
+
+        <a href="#" onclick="confirmExitWhileWriting(() => openTool('Memories')); setActiveMenu(this)">
+            🧠 Memories
+        </a>
+    </div>
+</div>
+<div class="menu-group">
+    <button class="dropdown-btn">Gentle Check-In ▾</button>
+     <div class="dropdown-content">
+<a href="#" onclick="confirmExitWhileWriting(() => openTool('CheckIn')); setActiveMenu(this)">
+    🫶 CheckIn
+</a>
+</div>
+</div>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+        <!-- Topbar with avatar + dropdown -->
+        <div class="topbar">
+            <h1 id="welcomeText">Welcome!</h1>
+
+            <div class="avatar-container">
+                <img class="avatar" id="dashboardAvatar" onclick="confirmExitWhileWriting(() => openTool('Accounts'))"
+                    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ff6b81'/%3E%3Cstop offset='100%25' stop-color='%23e11d48'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='30' fill='url(%23g)'/%3E%3Cpath d='M32 24c3-6 12-6 15 0 3 6-3 14-15 20-12-6-18-14-15-20 3-6 12-6 15 0z' fill='white'/%3E%3C/svg%3E" />
+            </div>
+        </div>
+
+
+        <!-- Account View -->
+        <div id="accountView" class="hidden pageView">
+            <button class="back" onclick="goDashboard()">← Back</button>
+
+            <h2>Account</h2>
+
+            <!-- PROFILE SECTION -->
+            <div class="section-box">
+                <h3>Profile</h3>
+                <center>
+                    <div class="avatar-edit">
+                        <img class="profile-avatar" id="profileAvatar"
+                            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ff6b81'/%3E%3Cstop offset='100%25' stop-color='%23e11d48'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='30' fill='url(%23g)'/%3E%3Cpath d='M32 24c3-6 12-6 15 0 3 6-3 14-15 20-12-6-18-14-15-20 3-6 12-6 15 0z' fill='white'/%3E%3C/svg%3E"
+                            style="cursor:pointer" />
+
+
+                        <input type="file" id="avatarInput" accept="image/*" style="display:none" />
+                        <span class="edit-badge">✏️</span>
+                    </div>
+
+                </center>
+
+                <div class="info-row">
+                    <strong>Name</strong>
+                    <span id="displayUsername"></span>
+                </div>
+
+                <div class="info-row">
+                    <strong>Email</strong>
+                    <span id="displayEmail"></span>
+                </div>
+            </div>
+
+            <div class="section-box" id="settingsPanel">
+                <h3>Settings</h3>
+                <label class="toggle-row">
+                    <span>Theme</span>
+                    <select id="themeMode" class="select-style">
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                    </select>
+                </label>
+                <label class="toggle-row">
+                    <span>Emotion Suggestions</span>
+                    <label class="switch">
+                        <input type="checkbox" id="emotionHintsToggle">
+                        <span class="slider"></span>
+                    </label>
+                </label>
+                <label class="toggle-row">
+                    <span>Handwriting Style</span>
+                    <select id="handwritingStyle" class="select-style">
+                        <option value="default" selected>Default</option>
+                        <option value="cute">Cute Notebook ✨</option>
+                        <option value="deep">Deep Poetry 🖋️</option>
+                        <option value="journal">Bold Journal 🌙</option>
+                    </select>
+                </label>
+                <label class="toggle-row">
+                    <span>Font Size</span>
+                    <select id="fontSize" class="select-style">
+                        <option value="small">Small</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="large">Large</option>
+                    </select>
+                </label>
+                <label class="toggle-row">
+                    <span>Language</span>
+                    <select id="uiLanguage" class="select-style">
+                        <option value="en">English</option>
+                        <option value="hi">हिन्दी (Hindi)</option>
+                    </select>
+                </label> <button class="feedback-btn" onclick="openFeedbackForm()">
+                    Send Feedback
+                </button>
+
+                <button class="danger-btn" onclick="resetApp()">
+                    Reset App
+                </button>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+               <button class="logout-btn" onclick="deleteAccount()">Delete Account</button>
+            </div>
+
+            <!-- ABOUT SECTION -->
+            <div class="section-box">
+                <h3>About HeartNote AI</h3>
+
+                <p>HeartNote AI is built to structure emotional writing. 
+It guides you through moments, reactions, and reflections — so your words feel intentional, not random</p>
+                <p class="about-small">Version: 1<br>Created by Solulure Labs</p>
+            </div>
+        </div>
+
+
+        <!-- Dashboard Cards -->
+        <div id="libraryView">
+            <h3 class="maincardname">Your Writing Tools</h3>
+            <div class="cards">
+                <div class="card" onclick="openTool('Letters')">
+                    <div class="card-icon">💌</div>
+                    <h3>Love Letter Maker</h3>
+                    <p>Express heartfelt feelings through poetic letters.</p>
+                </div>
+                <div class="card" onclick="openTool('Affirmation')">
+                    <div class="card-icon">🌈</div>
+                    <h3>Affirmation Creator</h3>
+                    <p>Create uplifting affirmations to brighten your day.</p>
+                </div>
+                <div class="card" onclick="openTool('Journal')">
+                    <div class="card-icon">📔</div>
+                    <h3>Mood Journal</h3>
+                    <p>Reflect and write about your emotions daily.</p>
+                </div>
+            </div>
+            <div id="recentSection" class="recent-section">
+                <h3>🕒 Your Recent Activity</h3>
+                <div id="recentCards" class="recent-cards"></div>
+            </div>
+        </div>
+
+        <!-- Tool Workspace -->
+        <!-- Tool Workspace -->
+        <div id="workspaceView" class="workspace">
+            <button class="back-btn" onclick="confirmExitWhileWriting(goBack)">
+                ← Back to Tools
+            </button>
+
+            <div class="form-container">
+                <div class="form-section">
+                    <h3 id="toolTitle">Reflection</h3>
+
+                    <label for="nameInput">Who was involved in this moment?</label>
+                    <div class="input-group">
+                        <input type="text" id="nameInput"
+                            placeholder="e.g. My sister, My best friend, My father, Myself..." required>
+                        <button class="suggest-topic" onclick="suggestName()" title="Suggest topic">💡</button>
+                    </div>
+                    <label for="descInput">What actually happened?</label>
+
+                    <div class="input-group">
+                        <textarea id="descInput" rows="4"
+                            placeholder="Describe the real moment. What happened? What was said? What did you not say?"
+                            required></textarea>
+                        <button class="suggest-felling" onclick="suggestFeeling()" title="Suggest feeling">💡</button>
+                    </div>
+                    <div id="emotionSuggestBar" class="emotion-suggest hidden">
+    <button onclick="selectEmotion('Thankful for the time you showed up when I needed help')">🙏 Grateful</button>
+    <button onclick="selectEmotion('Thinking about the nights we stayed up talking')">🫂 Nostalgic</button>
+    <button onclick="selectEmotion('Remembering how you stood by me during a hard time')">🛡️ Supported</button>
+    <button onclick="selectEmotion('Proud of how you handled something difficult')">💪 Proud</button>
+</div>
+
+
+                    <label for="depthInput">Depth of Emotion</label> <select id="depthInput">
+                        <option value="light">Gentle</option>
+<option value="medium">Honest</option>
+<option value="deep">Raw</option>
+
+                    </select>
+
+
+                    <button class="generate" onclick="generateContent()">Write From This Moment</button>
+
+                </div>
+
+                <div class="playground-section">
+                    <div class="playground-header">
+                        <h3>Your Writing</h3>
+                        <div class="writing-actions">
+                        <button class="copy-btn" onclick="copyText()">Copy</button>
+                        </div>
+                    </div>
+                    <div id="output" class="output">Your words from that moment will appear here.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="state" data-blocked="false" data-viewing="false"></div>
+
+        <footer>© 2025 HeartNote AI — Designed with by Mohith Sai</footer>
+    </main>
+
+    <script>
+        function openTool(name) {
+            // Hide everything first
+            document.getElementById("libraryView").style.display = "none";
+            document.getElementById("workspaceView").classList.remove("active");
+            document.getElementById("accountView").classList.add("hidden");
+
+
+            // --- 1️⃣ Dashboard ---
+            if (name === "Dashboard") {
+                document.getElementById("libraryView").style.display = "block";
+                showRecents();
+                return;
+            }
+
+            if (name === "Accounts") {
+                document.getElementById("accountView").classList.remove("hidden");
+                return;
+            }
+
+            // --- 5️⃣ Writing Tools (Letters, Poems, Notes...) ---
+            document.getElementById('workspaceView').classList.add('active');
+            document.getElementById('toolTitle').innerText = name;
+
+            const recents = JSON.parse(localStorage.getItem("recents")) || [];
+            const found = recents.find(r => r.name === name && r.output);
+
+            if (found && event.target.closest('.recent-card')) {
+                document.getElementById("nameInput").value = found.nameInput || "";
+                document.getElementById("descInput").value = found.descInput || "";
+                document.getElementById("depthInput").value = found.depthInput || "light";
+                document.getElementById("output").innerText = found.output || "Your words from that moment will appear here...";
+            } else {
+                document.getElementById("nameInput").value = "";
+                document.getElementById("descInput").value = "";
+                document.getElementById("depthInput").value = "light";
+                document.getElementById("output").innerText = "Your words from that moment will appear here...";
+            }
+        }
+
+        let isViewingRecent = false; // ✅ Track if we're viewing an existing recent
+
+        // 🕒 Save to recents
+      async function saveRecent(toolName){
+
+    const form = new FormData();
+
+    form.append("tool", toolName);
+    form.append("icon", getToolIcon(toolName));
+    form.append("nameInput", document.getElementById("nameInput").value);
+    form.append("descInput", document.getElementById("descInput").value);
+    form.append("depthInput", document.getElementById("depthInput").value);
+    form.append("output", lastGeneratedText);
+    await fetch("/api/save-writing/",{
+        method:"POST",
+        body:form
+    });
+}
+
+        function getToolIcon(name) {
+    const icons = {
+        "Letters": "💌",
+        "Poems": "🪶",
+        "Story": "✨",
+        "Journal": "📔",
+        "Reflection": "🌿",
+        "Messages": "💬",
+        "Memories": "🧠",
+         "CheckIn": "🫶",
+    };
+    return icons[name] || "🪶";
+}
+
+ let recentsData = [];
+
+async function showRecents(){
+
+    const container = document.getElementById("recentCards");
+
+    const res = await fetch("/api/get-writings/");
+    const data = await res.json();
+
+    recentsData = data.recents || [];
+
+    if(recentsData.length === 0){
+        container.innerHTML = `
+        <p class="no-recents">
+        No writings yet. Your first note will appear here.
+        </p>`;
+        return;
+    }
+
+    let html = "";
+
+    recentsData.forEach(r => {
+
+        html += `
+        <div class="recent-card">
+
+            <div class="recent-left" onclick="openRecent(${r.id})">
+
+                <span class="recent-icon">${r.icon}</span>
+
+                <div class="recent-text">
+                    <p>${r.name}</p>
+                    <small class="preview">${r.preview}</small>
+                    <small>${r.time}</small>
+                </div>
+
+            </div>
+
+            <button class="delete-btn" onclick="deleteRecent(${r.id})">❌</button>
+
+        </div>
+        `;
+    });
+
+    container.innerHTML = html;
+}
+        // 🧹 Delete one
+       async function deleteRecent(id){
+
+    await fetch("/api/delete-writing/",{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({id})
+    });
+
+    showRecents();
+}
+
+    let typingInterval = null;
+        let isWriting = false;
+        let generatedTool = null;
+        let lastGeneratedText = "";
+        let hasGeneratedContent = false;
+        let alreadySaved = false;
+        let isSaving = false;
+
+        // 🧭 Open a specific saved recent
+ function openRecent(id){
+
+    const state = document.getElementById("state");
+
+    // mark that user is viewing an old writing
+    state.dataset.viewing = "true";
+
+    // reset generation state
+    hasGeneratedContent = false;
+    lastGeneratedText = "";
+    generatedTool = null;
+
+    // prevent saving again
+    
+    alreadySaved = true;
+
+    const item = recentsData.find(r => r.id === id);
+    if(!item) return;
+
+    document.getElementById("toolTitle").innerText = item.name;
+    document.getElementById("nameInput").value = item.nameInput || "";
+    document.getElementById("descInput").value = item.descInput || "";
+    document.getElementById("depthInput").value = item.depthInput || "";
+    document.getElementById("output").innerText = item.output || "";
+
+    // switch UI
+    document.getElementById("libraryView").style.display = "none";
+    document.getElementById("workspaceView").classList.add("active");
+}
+        function capitalizeFirst(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+    
+
+async function goBack() {
+
+    const state = document.getElementById("state");
+
+    if(state.dataset.viewing === "true"){
+
+        state.dataset.viewing = "false";
+
+        document.getElementById("workspaceView").classList.remove("active");
+        document.getElementById("libraryView").style.display = "block";
+
+        showRecents();
+        return;
+    }
+
+    if (
+        hasGeneratedContent &&
+        lastGeneratedText &&
+        generatedTool &&
+        !alreadySaved &&
+        !isSaving
+    ) {
+        isSaving = true;
+
+        await saveRecent(capitalizeFirst(generatedTool));
+
+        alreadySaved = true;
+        isSaving = false;
+    }
+
+    hasGeneratedContent = false;
+    lastGeneratedText = "";
+    generatedTool = null;
+
+    const dashboardLink = document.getElementById("menu-dashboard");
+    if (dashboardLink) setActiveMenu(dashboardLink);
+
+    document.getElementById("workspaceView").classList.remove("active");
+    document.getElementById("libraryView").style.display = "block";
+
+    showRecents();
+}
+
+        function getToneFromEmotion(value) {
+            const num = Number(value);
+
+            if (num <= 33) return "light";
+            if (num <= 66) return "medium";
+            return "deep";
+        }
+
+        function emotionalTypeWrite(text, elementId, depth, onComplete) {
+            const el = document.getElementById(elementId);
+            el.innerHTML = "";
+
+            let i = 0;
+            let speed = 55;
+            if (depth === "light") speed = 35;
+            if (depth === "deep") speed = 80;
+
+            if (typingInterval) {
+                clearTimeout(typingInterval);
+                typingInterval = null;
+            }
+
+            function typeNext() {
+                if (i >= text.length) {
+                    typingInterval = null;
+                    if (onComplete) onComplete();
+                    return;
+                }
+
+                let char = text.charAt(i);
+                el.innerHTML += char;
+                i++;
+
+                let pause = speed;
+
+                // natural pauses
+                if (char === "," || char === ";") pause += 120;
+                if (char === "." || char === "!" || char === "?") pause += 200;
+                if (char === "\n") pause += 300;
+
+                // emotional hesitation (very subtle)
+                if (depth === "deep" && Math.random() < 0.06) pause += 150;
+
+                typingInterval = setTimeout(typeNext, pause);
+            }
+
+            typeNext();
+        }
+
+
+
+        async function generateContent() {
+            if (isWriting) return; // prevent double click
+
+            isWriting = true;
+
+            const name = document.getElementById("nameInput").value.trim();
+            const desc = document.getElementById("descInput").value.trim();
+            const depth = document.getElementById("depthInput").value;
+            const mode = document.getElementById("toolTitle").innerText.trim().toLowerCase();
+            generatedTool = mode; // ✅ LOCK TOOL HERE
+            if (!name && !desc) {
+                alert("Please write something.");
+                isWriting = false;
+                return;
+            }
+
+            const language = getCurrentLanguage(); // ✅ OK if function exists
+
+            const output = document.getElementById("output");
+            output.innerHTML = "✍️ Writing from the heart...";
+
+            try {
+                const url =
+                    `/api/dashboard/?mode=${encodeURIComponent(mode)}` +
+                    `&name=${encodeURIComponent(name)}` +
+                    `&desc=${encodeURIComponent(desc)}` +
+                    `&depth=${encodeURIComponent(depth)}` +
+                    `&language=${encodeURIComponent(language)}`;
+
+                const res = await fetch(url);
+                const data = await res.json();
+
+                const state = document.getElementById("state");
+                const blocked = data.response.blocked === true;
+                const isFallback = data.response.is_fallback === true;
+                state.dataset.fallback = isFallback ? "true" : "false";
+
+
+                const text = data.response.response.trim();
+                lastGeneratedText = text;
+                hasGeneratedContent = true; // ✅ IMPORTANT
+                emotionalTypeWrite(text, "output", depth, () => {
+                    isWriting = false;
+                });
+
+            } catch (err) {
+                console.error(err);
+                output.innerHTML = "⚠️ Something went wrong. Please try again.";
+                isWriting = false;
+            }
+        }
+        function showHeartNotePopup(title, message, onConfirm) {
+            const popup = document.getElementById("hn-popup");
+            document.getElementById("hn-popup-title").innerText = title;
+            document.getElementById("hn-popup-message").innerText = message;
+
+            const confirmBtn = document.getElementById("hn-popup-confirm");
+            confirmBtn.onclick = () => {
+                closeHeartNotePopup();
+                if (onConfirm) onConfirm();
+            };
+
+            document.getElementById("hn-popup").classList.remove("hidden");
+
+            popup.classList.remove("hidden");
+
+    setTimeout(() => {
+        popup.classList.add("show");
+    }, 10);
+        }
+
+        function closeHeartNotePopup() {
+             const popup = document.getElementById("hn-popup");
+            document.getElementById("hn-popup").classList.add("hidden");
+            setTimeout(() => {
+        popup.classList.add("show");
+    }, 10);
+        }
+
+       async function confirmExitWhileWriting(action) {
+
+    if (isWriting) {
+
+        showHeartNotePopup(
+            "Your writing is still in progress",
+            "If you switch now, the draft will stop generating. Your current text will be saved.",
+            async () => {
+
+                // stop writing safely
+                isWriting = false;
+
+                if (typingInterval) {
+                    clearInterval(typingInterval);
+                    typingInterval = null;
+                }
+
+                // save draft if there is generated text
+                if (
+                    hasGeneratedContent &&
+                    lastGeneratedText &&
+                    generatedTool &&
+                    !alreadySaved
+                ) {
+                    alreadySaved = true;
+                    await saveRecent(capitalizeFirst(generatedTool));
+                }
+
+                // now switch tool
+                action();
+
+            },
+            "Leave"
+        );
+
+    } else {
+        action();
+    }
+}
+
+
+
+        function copyText() {
+    const tool = document.getElementById("toolTitle").innerText.toLowerCase();
+    const text = document.getElementById("output").innerText;
+
+    const sensitiveTools = ["letters", "poems", "story"];
+
+    if (sensitiveTools.includes(tool)) {
+
+        showHeartNotePopup(
+            "Before you copy",
+            "This piece may contain personal emotions.\nMake sure it represents what you truly want to say.",
+            () => {
+                navigator.clipboard.writeText(text);
+                showHeartNotePopup(
+                    "Copied",
+                    "Your text has been copied to clipboard.",
+                    null,
+                    "Okay"
+                );
+            },
+            "Copy Anyway"
+        );
+
+    } else {
+        navigator.clipboard.writeText(text);
+
+        showHeartNotePopup(
+            "Copied",
+            "Your text has been copied to clipboard.",
+            null,
+            "Okay"
+        );
+    }
+}
+
+        function suggestName() {
+            // Assuming currentMode() is defined and returns the mode string (e.g., 'reflection', 'letters')
+            const mode = currentMode();
+            let ideas = [];
+
+            // These ideas are designed to work well as the "who/what" the content is FOR (the nameInput).
+            switch (mode) {
+                case "reflection":
+                    ideas = [
+                        "The mistake I learned from",
+                        "A hard decision I made",
+                        "A moment I stayed silent",
+                        "Something I outgrew",
+                        "A turning point in my life"
+                    ];
+                    break;
+
+                case "journal":
+                    ideas = [
+                        "What happened today",
+                        "A conversation I had",
+                        "Something that bothered me",
+                        "A small win today",
+                        "Something I avoided"
+                    ];
+                    break;
+
+                case "letters":
+                    ideas = [
+                        "A message I never sent",
+                        "What I wanted to say that day",
+                        "An apology I couldn’t express",
+                        "A thank you I never fully said",
+                        "Words I held back"
+                    ];
+                    break;
+
+                case "poems":
+                    ideas = [
+                        "A quiet evening alone",
+                        "Rain outside my window",
+                        "The last time we met",
+                        "A fading memory",
+                        "Waiting without knowing"
+                    ];
+                    break;
+
+                case "story":
+                    ideas = [
+                        "The day everything changed",
+                        "A stranger who helped me",
+                        "A risk that scared me",
+                        "Losing something important",
+                        "Starting again from zero"
+                    ];
+                    break;
+
+                case "quotes":
+                    ideas = [
+                        "After a failure",
+                        "When no one understands",
+                        "During a hard season",
+                        "When healing feels slow",
+                        "On letting go"
+                    ];
+                    break;
+
+                    case "messages":
+    ideas = [
+        "A thank you message",
+        "An apology message",
+        "A message I never sent",
+        "A message to someone I miss",
+        "A supportive message for a friend"
+    ];
+    break;
+    case "memories":
+    ideas = [
+        "A moment from childhood",
+        "A memory with a close friend",
+        "A memory that still makes me smile",
+        "A lesson I learned the hard way",
+        "A moment I wish I could revisit"
+    ];
+    break;
+    case "checkin":
+    ideas = [
+        "A quiet moment this week",
+        "Something I kept thinking about",
+        "A moment I want to remember",
+        "Something I am slowly understanding",
+        "A small emotional shift"
+    ];
+break;
+
+                default:
+                    ideas = [
+                        "Something I am learning",
+                        "A recent realization",
+                        "A difficult memory",
+                        "An important lesson",
+                        "A quiet thought"
+                    ];
+            }
+
+
+            document.getElementById("nameInput").value =
+                ideas[Math.floor(Math.random() * ideas.length)];
+        }
+
+        // Keep this function IF you have individual, smaller buttons for quick stacking
+        // APPEND MODE — emotional tags
+        function selectEmotion(text) {
+            const input = document.getElementById("descInput");
+            const current = input.value.trim();
+
+            input.value = current ? current + ", " + text : text;
+            input.focus();
+        }
+
+        // REPLACE MODE — suggestion feeling (always replace)
+        function suggestFeeling() {
+            const input = document.getElementById("descInput");
+            const newSuggestion = generateSuggestionContent();
+
+            // Always replace previous text
+            input.value = newSuggestion;
+
+            input.focus();
+        }
+
+
+
+        // 📌 Helper function to move suggestion logic out of suggestFeeling
+        // 📌 Helper function to move suggestion logic out of suggestFeeling
+        function generateSuggestionContent() {
+            const mode = currentMode();
+            let emotions = [];
+
+            switch (mode) {
+                case "reflection":
+                    emotions = [
+                        "I stayed quiet even though I wanted to speak up",
+                        "I realized I was avoiding something important",
+                        "I handled it better than I expected",
+                        "I reacted emotionally and later understood why"
+                    ];
+
+                    break;
+
+                case "journal":
+                    emotions = [
+                        "Today something small affected me more than I expected",
+                        "I had a conversation that stayed in my mind",
+                        "I felt distracted and couldn’t explain why",
+                        "I noticed a pattern in my behavior today"
+                    ];
+
+                    break;
+
+                case "letters":
+                    emotions = [
+                        "I never told you how that day affected me",
+                        "There were things I wanted to say but didn’t",
+                        "I misunderstood you at that moment",
+                        "I still think about what happened between us"
+                    ];
+
+                    break;
+
+                case "poems":
+                    emotions = [
+                        "The room felt quieter than usual",
+                        "I kept replaying the same memory",
+                        "There was something unfinished in the air",
+                        "Time moved slowly that evening"
+                    ];
+
+                    break;
+
+                case "story":
+                    emotions = [
+                        "That was the moment everything shifted",
+                        "I didn’t know it would change me",
+                        "It started like any normal day",
+                        "I almost walked away but stayed"
+                    ];
+
+                    break;
+
+                    case "messages":
+    emotions = [
+        "I wanted to say something but held back",
+        "There is something I want someone to know",
+        "I’ve been thinking about reaching out",
+        "I wish I had said this earlier"
+    ];
+    break;
+
+    case "memories":
+    emotions = [
+        "Something reminded me of the past today",
+        "I remembered a moment that shaped me",
+        "A memory came back unexpectedly",
+        "I thought about how things used to be"
+    ];
+    break;
+
+    case "checkin":
+    emotions = [
+        "This week something small stayed in my thoughts",
+        "I noticed myself reflecting on a quiet moment",
+        "A feeling returned more than once this week",
+        "Something inside me felt slightly different"
+    ];
+break;
+
+                default:
+                    emotions = [
+                        "today feels quieter, slower, and more manageable",
+                        "finding comfort in small moments and simple breaths",
+                        "progress does not need to be rushed to matter",
+                        "making space for calm and gentle thoughts"
+                    ];
+            }
+
+            const randomIndex = Math.floor(Math.random() * emotions.length);
+            return emotions[randomIndex];
+        }
+
+        function currentMode() {
+            const tool = document.getElementById("toolTitle").innerText.toLowerCase();
+
+            switch (tool) {
+                case "reflection": return "reflection";
+                case "journal": return "journal";
+                case "letters": return "letters";
+                case "poems": return "poems";
+                case "story": return "story";
+                default: return "default";
+            }
+        }
+
+        document.querySelectorAll('.dropdown-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const dropdown = button.nextElementSibling;
+                dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
+            });
+        });
+    window.addEventListener("DOMContentLoaded", function () {
+
+    openTool('Dashboard');
+
+    const dashboardLink = document.getElementById('menu-dashboard');
+    if (dashboardLink) {
+        setActiveMenu(dashboardLink);
+    }
+
+    const cardsContainer = document.querySelector(".cards");
+    const isMobile = window.innerWidth <= 768;
+
+    cardsContainer.innerHTML = "";
+
+    const cards = [
+        { icon:"🌿", title:"Reflection", desc:"Break down a moment and understand it better.", tool:"Reflection"},
+        { icon:"📔", title:"Journal", desc:"Write about your day and your thoughts.", tool:"Journal"},
+        { icon:"💌", title:"Letters", desc:"Write a heartfelt letter to someone.", tool:"Letters"},
+        { icon:"🪶", title:"Poems", desc:"Express feelings through poetry.", tool:"Poems"},
+        { icon:"✨", title:"Story", desc:"Turn your thoughts into a meaningful story.", tool:"Story"},
+        { icon:"💬", title:"Messages", desc:"Write a message you want to say but haven’t sent.", tool:"Messages"},
+        { icon:"🧠", title:"Memories", desc:"Capture a moment from the past and reflect on it.", tool:"Memories"},
+        { icon:"🫶", title:"Gentle Check-In", desc:"Pause and reflect on the emotional moments of your week.", tool:"CheckIn"}
+    ];
+
+    const visibleCards = isMobile ? cards.slice(0,5) : cards;
+
+    visibleCards.forEach(card => {
+        cardsContainer.innerHTML += `
+        <div class="card" onclick="openTool('${card.tool}')">
+            <div class="card-icon">${card.icon}</div>
+            <h3>${card.title}</h3>
+            <p>${card.desc}</p>
+        </div>
+        `;
+    });
+
+});
+
+
+function setActiveMenu(el) {
+    document.querySelectorAll('.menu a').forEach(a => {
+        a.classList.remove('active');
+    });
+    el.classList.add('active');
+}
+        document.addEventListener("DOMContentLoaded", () => {
+            const output = document.getElementById("output");
+
+            if (output) {
+                output.addEventListener("input", () => {
+                    const toolName = document.getElementById("toolTitle").innerText;
+                    const currentText = output.innerText;
+                    updateRecentContent(toolName, currentText);
+                });
+            }
+
+            showRecents();
+        });
+        function updateRecentContent(toolName, newContent) {
+            let recents = JSON.parse(localStorage.getItem("recents")) || [];
+            const index = recents.findIndex(r => r.name === toolName);
+            if (index !== -1) {
+                recents[index].content = newContent;
+                localStorage.setItem("recents", JSON.stringify(recents));
+            }
+        }
+        function hideAllPages() {
+            document.querySelectorAll(".pageView").forEach(p => p.classList.add("hidden"));
+            document.getElementById("libraryView").style.display = "none";
+        }
+        function goDashboard() {
+            hideAllPages();
+            document.getElementById("libraryView").style.display = "block";  // Show main screen
+        }
+        window.onload = () => {
+            loadProfile();
+        };
+
+        async function loadProfile() {
+
+    const res = await fetch("/api/profile/");
+    const data = await res.json();
+
+    if (data.error) {
+        console.log("User not logged in");
+        return;
+    }
+
+    document.getElementById("welcomeText").innerText =
+        `Welcome, ${data.username}`;
+
+    document.getElementById("displayUsername").textContent =
+        data.username;
+
+    document.getElementById("displayEmail").textContent =
+        data.email;
+}
+
+document.addEventListener("DOMContentLoaded", loadProfile);
+
+        // === Emotion Suggestions Toggle ===
+        function updateEmotionHintsUI(enabled) {
+            const bar = document.getElementById("emotionSuggestBar");
+            if (!bar) return;
+            bar.classList.toggle("hidden", !enabled);
+        }
+
+        document.getElementById("emotionHintsToggle").addEventListener("change", (e) => {
+            const enabled = e.target.checked;
+            localStorage.setItem("emotionHints", JSON.stringify(enabled));
+            updateEmotionHintsUI(enabled);
+        });
+        // Load saved state on page load
+        document.addEventListener("DOMContentLoaded", () => {
+            const saved = JSON.parse(localStorage.getItem("emotionHints")) ?? true;
+            document.getElementById("emotionHintsToggle").checked = saved;
+            updateEmotionHintsUI(saved);
+        });
+
+        const THEME_COLORS = {
+            light: "#ffffff",
+            dark: "#141414",
+            blossom: "#ffddea"
+        };
+
+
+
+        function loadTheme() {
+            const settings = JSON.parse(localStorage.getItem("heartnote_settings")) || {};
+            const theme = settings.theme || "light";
+
+            document.body.setAttribute("data-theme", theme);
+
+            // update dropdown
+            const select = document.getElementById("themeMode");
+            if (select) select.value = theme;
+
+            // update theme color
+            const meta = document.getElementById("themeColorMeta");
+            if (meta && THEME_COLORS[theme]) {
+                meta.setAttribute("content", THEME_COLORS[theme]);
+            }
+        }
+
+
+        function saveTheme(value) {
+            const settings = JSON.parse(localStorage.getItem("heartnote_settings")) || {};
+            settings.theme = value;
+            localStorage.setItem("heartnote_settings", JSON.stringify(settings));
+
+            // apply theme
+            document.body.setAttribute("data-theme", value);
+
+            // update browser theme color
+            const meta = document.getElementById("themeColorMeta");
+            if (meta && THEME_COLORS[value]) {
+                meta.setAttribute("content", THEME_COLORS[value]);
+            }
+        }
+
+
+        // listen for dropdown change
+        document.addEventListener("change", (e) => {
+            if (e.target.id === "themeMode") {
+                saveTheme(e.target.value);
+            }
+        });
+
+        // apply theme on startup
+        loadTheme();
+
+        async function logout() {
+
+  const res = await fetch("/api/logout/", {
+    method: "POST",
+    headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+  });
+
+  const data = await res.json();
+
+  if (data.status === "logged_out") {
+    window.location.href = "/";
+  } else {
+    alert("Logout failed");
+  }
+
+}
+        // === Logout ===
+        async function deleteAccount() {
+
+    showHeartNotePopup(
+        "Delete Account",
+        "Are you sure you want to delete your account?\n\nThis will remove your profile and all saved writings.",
+        async () => {
+
+            try {
+
+                const response = await fetch("/api/delete-account/", {
+                    method: "POST",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                });
+
+                if (response.ok) {
+
+                    localStorage.clear();
+
+                    showHeartNotePopup(
+                        "Account Deleted",
+                        "Your account has been deleted successfully.",
+                        () => {
+                            window.location.href = "/";
+                        },
+                        "Okay"
+                    );
+
+                } else {
+
+                    showHeartNotePopup(
+                        "Error",
+                        "Unable to delete account. Please try again."
+                    );
+
+                }
+
+            } catch (error) {
+
+                showHeartNotePopup(
+                    "Network Error",
+                    "Please try again later."
+                );
+
+            }
+
+        },
+        "Delete"
+    );
+
+}
+      async function resetApp(){
+
+    showHeartNotePopup(
+        "Reset App",
+        "Reset app?\n\nAll writings will be deleted.",
+        async () => {
+
+            const res = await fetch("/api/reset-app/",{
+                method:"POST"
+            });
+
+            const data = await res.json();
+
+            if(data.status === "reset"){
+
+                localStorage.removeItem("heartnote_settings");
+
+                showHeartNotePopup(
+                    "Reset Complete",
+                    "All writings have been removed.",
+                    () => {
+                        location.reload();
+                    },
+                    "Okay"
+                );
+
+            }
+
+        },
+        "Reset"
+    );
+
+}
+
+        const styleSelect = document.getElementById("handwritingStyle");
+        const outputArea = document.getElementById("output");
+        const savedStyle = localStorage.getItem("handwritingStyle");
+        if (savedStyle) {
+            styleSelect.value = savedStyle;
+            applyHandwritingStyle(savedStyle);
+        }
+
+        styleSelect.addEventListener("change", (e) => {
+            const selected = e.target.value;
+            localStorage.setItem("handwritingStyle", selected);
+            applyHandwritingStyle(selected);
+        });
+        function applyHandwritingStyle(style) {
+            outputArea.classList.remove("font-cute", "font-romantic", "font-deep", "font-journal");
+
+            if (style === "cute") {
+                outputArea.classList.add("font-cute");
+            } else if (style === "deep") {
+                outputArea.classList.add("font-deep");
+            } else if (style === "journal") {
+                outputArea.classList.add("font-journal");
+            }
+        }
+        function applyHandwriting(fontName) {
+            const h1 = document.querySelector(".output");
+            h1.style.fontFamily = fontName;
+
+            h1.classList.remove("handwriting-animate");
+            void h1.offsetWidth; // restart animation trick
+            h1.classList.add("handwriting-animate");
+
+            h1.classList.remove("draw-effect");
+            void h1.offsetWidth;
+            h1.classList.add("draw-effect");
+
+        }
+
+        function loadFontSize() {
+            const s = JSON.parse(localStorage.getItem("heartnote_settings")) || {};
+            const v = s.fontSize || "medium";
+
+            document.documentElement.setAttribute("data-font", v);
+
+            const el = document.getElementById("fontSize");
+            if (el) el.value = v;
+        }
+
+
+        function saveFontSize(value) {
+            const s = JSON.parse(localStorage.getItem("heartnote_settings")) || {};
+            s.fontSize = value;
+            localStorage.setItem("heartnote_settings", JSON.stringify(s));
+
+            document.documentElement.setAttribute("data-font", value);
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+            loadLanguage();
+        });
+
+        function loadLanguage() {
+            const s = JSON.parse(localStorage.getItem("heartnote_settings")) || {};
+            const v = ["en", "hi"].includes(s.language) ? s.language : "en";
+            const el = document.getElementById("uiLanguage");
+            if (el) el.value = v;
+        }
+
+        function getCurrentLanguage() {
+            const s = JSON.parse(localStorage.getItem("heartnote_settings")) || {};
+            return s.language || "en";
+        }
+
+        function saveLanguage(value) {
+            const s = JSON.parse(localStorage.getItem("heartnote_settings")) || {};
+            s.language = value;
+            localStorage.setItem("heartnote_settings", JSON.stringify(s));
+        }
+
+        document.addEventListener("change", (e) => {
+            if (e.target.id === "fontSize") {
+                saveFontSize(e.target.value);
+                applyFontSize();   // ← REQUIRED
+            }
+
+            if (e.target.id === "uiLanguage") {
+                saveLanguage(e.target.value);
+            }
+        });
+
+
+        function applyFontSize() {
+            const s = JSON.parse(localStorage.getItem("heartnote_settings")) || {};
+            const size = s.fontSize || "medium";
+            document.documentElement.setAttribute("data-font", size);
+        }
+
+
+
+        function openFeedbackForm() {
+            window.open("https://docs.google.com/forms/d/e/1FAIpQLSf4rrCaMcpGZMRzVB52OCqQGiMES2UrMnpc8Szd6D8oEEGjYw/viewform?usp=dialog", "_blank");
+        }
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register("{% static 'pwa/service-worker.js' %}");
+        }
+
+            
+        document.addEventListener("DOMContentLoaded", async () => {
+
+    const profileAvatar = document.getElementById("profileAvatar");
+    const dashboardAvatar = document.getElementById("dashboardAvatar");
+    const input = document.getElementById("avatarInput");
+
+    // Load avatar from server
+    const res = await fetch("/api/avatar/");
+    const data = await res.json();
+
+    if (data.avatar) {
+        if (profileAvatar) profileAvatar.src = data.avatar;
+        if (dashboardAvatar) dashboardAvatar.src = data.avatar;
+    }
+
+    if (!profileAvatar || !input) return;
+
+    profileAvatar.addEventListener("click", () => input.click());
+
+    input.addEventListener("change", async () => {
+
+        const file = input.files[0];
+        if (!file || !file.type.startsWith("image/")) return;
+
+        const form = new FormData();
+        form.append("avatar", file);
+
+        const res = await fetch("/api/upload-avatar/", {
+            method: "POST",
+            body: form
+        });
+
+        const data = await res.json();
+
+        if (data.avatar_url) {
+            profileAvatar.src = data.avatar_url;
+            if (dashboardAvatar) dashboardAvatar.src = data.avatar_url;
+        }
+
+    });
+
+});
+
+    </script>
+</body>
+
+</html>

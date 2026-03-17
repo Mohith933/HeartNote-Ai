@@ -1,0 +1,773 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="icon" type="image/png" href="{% static 'icons/icon-192.png' %}">
+  <title>HeartNote AI — Write From What Actually Happened.</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="manifest" href="{% static 'pwa/manifest.json' %}">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#141414">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+  <style>
+    :root {
+      --accent: #ff4d6d;
+      --accent-dark: #e63950;
+      --bg: #ffffff;
+      --text: #222222;
+      --card: #fff;
+      --muted: #f9f9f9;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d0d0d;
+        --text: #f5f5f5;
+        --card: #1a1a1a;
+        --muted: #141414;
+        --accent: #ff668a;
+        --accent-dark: #ff4d6d;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      header {
+        background: var(--card);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .feature {
+        background: var(--card);
+        box-shadow: 0 4px 12px rgba(255, 77, 109, 0.08);
+      }
+
+      .journey-step {
+        background: var(--muted);
+        border-left: 6px solid var(--accent);
+      }
+
+      footer {
+        background: var(--accent-dark);
+      }
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 8%;
+      background: var(--card);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+       .logo img {
+            width: 60px;
+    height: 100%;
+    margin-left: -20px;
+    margin-right: -20px;
+    margin-bottom: -5px;
+}
+
+    .cta-btn {
+      background: var(--accent);
+      color: #fff;
+      padding: 10px 18px;
+      gap:2px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .cta-btn:hover {
+      background: var(--accent-dark);
+      transform: scale(1.05);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+  transition: opacity 0.25s ease;
+    }
+    .modal.show {
+  display: flex;
+  opacity: 1;
+}
+
+    .modal-content {
+      background: var(--card);
+      padding: 30px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-content h2 {
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+
+    .modal-content input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .modal-content button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .close {
+      position: absolute;
+      top: 20px;
+      right: 25px;
+      color: #fff;
+      font-size: 28px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .modal-content p {
+      margin-top: 12px;
+      /* space from Sign Up button */
+      font-size: 12px;
+      /* smaller helper text */
+      color: #9ca3af;
+      /* soft muted gray */
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 100px 8% 80px;
+      max-width: 800px;
+      margin: auto;
+       opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.6s ease forwards;
+    }
+
+    .hero h1 {
+      font-size: 2.8rem;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .hero p {
+      color: var(--text);
+      font-size: 1.1rem;
+      margin-bottom: 28px;
+      opacity: 0.9;
+    }
+
+    .hero .hero-btn {
+      background: var(--accent);
+      color: #fff;
+      padding: 12px 22px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .hero .hero-btn:hover {
+      background: var(--accent-dark);
+      transform: translateY(-2px);
+    }
+    @keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+    /* Features */
+    .features {
+      padding: 80px 8%;
+      background: var(--muted);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .features h2 {
+      text-align: center;
+      color: var(--accent);
+      font-size: 2rem;
+      margin-bottom: 50px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 28px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .feature {
+      background: var(--card);
+      padding: 24px;
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.12);
+      transition: transform 0.2s ease;
+    }
+
+    .feature:hover {
+      transform: translateY(-6px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    .feature h3 {
+      color: var(--accent);
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+    }
+
+    .feature p {
+      color: var(--text);
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    /* Journey Section */
+    .journey {
+      padding: 80px 8%;
+      background: var(--bg);
+      text-align: center;
+    }
+
+    .journey h2 {
+      color: var(--accent);
+      font-size: 2rem;
+      margin-bottom: 40px;
+    }
+
+    .journey-timeline {
+      max-width: 900px;
+      margin: auto;
+      display: grid;
+      gap: 40px;
+    }
+
+    .journey-step {
+      background: var(--muted);
+      border-left: 6px solid var(--accent);
+      padding: 24px;
+      border-radius: 12px;
+      text-align: left;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+    }
+
+    .journey-step h3 {
+      color: var(--accent);
+      margin-bottom: 10px;
+      font-size: 1.3rem;
+    }
+
+    .journey-step p {
+      color: var(--text);
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    .hero .helper-text {
+      margin-top: 8px;
+      /* space from button */
+      font-size: 0.85rem;
+      /* smaller text */
+      color: #9ca3af;
+      /* soft gray */
+      text-align: center;
+      opacity: 0.9;
+    }
+
+    .hn-popup {
+            position: fixed;
+            top:20px;
+            left: 30%;
+            right:30%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .hn-popup.hidden {
+            display: none;
+        }
+
+        .hn-popup-box {
+            background: var(--bg);
+    border-radius: 16px;
+    padding: 22px;
+    width: 100%;
+    max-width: max-content;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(255, 105, 135, 0.25);
+     opacity: 0;
+    transform: translateY(-10px) scale(0.97);
+    transition: all 0.25s ease;
+}
+.hn-popup.show .hn-popup-box {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+        .hn-popup-box h3 {
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .hn-popup-box p {
+            color: var(--text);
+            font-size: 14px;
+            margin-bottom: 18px;
+        }
+
+        .hn-popup-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+    .pink{
+      color:var(--accent);
+      font-weight: bold;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--accent);
+      color: #fff;
+      text-align: center;
+      padding: 40px 10%;
+      margin-top: 80px;
+    }
+
+    footer h3 {
+      font-weight: 600;
+      margin-bottom: 12px;
+      font-size: 1.2rem;
+    }
+
+    footer p {
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    footer small {
+      display: block;
+      margin-top: 18px;
+      opacity: 0.8;
+    }
+ .btn-primary {
+            flex: 1;
+            background: var(--accent);
+            color: var(--text);
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+        }
+    .dob-label {
+      display: block;
+      text-align: left;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    #dob {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      span{
+        font-size:1.2rem;
+      }
+       .logo img {
+    width: 40px;
+    height: 100%;
+    margin-left: -20px;
+    margin-right: -10px;
+    margin-bottom: -5px;
+}
+.hn-popup{
+                left:5%;
+                right:5%;
+            }
+      .buttons{
+        display:flex;
+        flex-direction: row;
+        gap: 4px;
+      }
+      .hero h1 {
+        font-size: 2.2rem;
+      }
+
+      header {
+        flex-direction: row;
+        gap: 10px;
+      }
+
+      .journey-step {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<div id="hn-popup" class="hn-popup hidden">
+    <div class="hn-popup-box">
+
+        <h3 id="hn-popup-title"></h3>
+
+        <p id="hn-popup-message"></p>
+
+        <div class="hn-popup-actions">
+            <button class="btn-primary" id = "hn-popup-confirm" onclick="closeHeartNotePopup()">OK</button>
+        </div>
+
+    </div>
+</div>
+
+  <header>
+    <div class="logo"> <img src="{% static 'icons/icon-512.png' %}" alt="HeartNote AI Logo">
+    <span>HeartNote AI</span></div>
+    <div class="buttons">
+    <button class="cta-btn" id="openSignup">Sign Up</button>
+    <button class="cta-btn" id="openLogin">Login</button>
+    </div>
+  </header>
+
+
+  <section class="hero" id="home">
+    <h1>HeartNote AI — Write From What Actually Happened.</h1>
+    <p>Describe a real moment. HeartNote transforms it into meaningful, deeply personal writing.</p>
+    <a href="{% url 'aiwrite' %}" class="hero-btn">Start With a Moment</a>
+    <p class="helper-text">No signup required</p>
+  </section>
+
+  <section class="features" id="features">
+    <h2>Why It Feels Different</h2>
+    <div class="features-grid">
+      <div class="feature">
+        <h3>Memory Anchoring</h3>
+        <p>Write from specific moments, not generic feelings.</p>
+      </div>
+      <div class="feature">
+        <h3>Structured Emotion Input</h3>
+        <p>Guided prompts help you recall real events before writing.</p>
+      </div>
+      <div class="feature">
+        <h3>Private & Personal</h3>
+        <p>Your writings stay private to your account.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="journey" id="journey">
+    <h2>Built for Real Moments</h2>
+    <div class="journey-timeline">
+
+      <div class="journey-step">
+        <h3>H1 — Memory-Based Personal Writing</h3>
+        <p>HeartNote focuses on one thing — helping you transform real-life moments into deeply personal letters,
+          reflections, and stories.</p>
+      </div>
+      <div class="journey-step">
+        <h3>H2 — Private Emotional Insights</h3>
+        <p>See how your emotional tone shifts over time through simple, private writing summaries. No feeds. No sharing.
+          Just your words, reflected back to you.</p>
+      </div>
+
+      <div class="journey-step">
+        <h3>H3 — Gentle Emotional Support</h3>
+        <p>Occasional check-ins and short weekly reflections based on your writing. Not advice. Not therapy. Just a
+          quiet mirror to help you notice what you’ve been carrying.</p>
+      </div>
+    </div>
+  </section>
+  <footer>
+    <h3>HeartNote AI</h3>
+    <p>Writing shaped by real moments.</p>
+    <small>© 2025 HeartNote AI. All rights reserved.</small>
+  </footer>
+
+  <!-- Signup Modal -->
+  <!-- Signup Modal -->
+  <div id="signupModal" class="modal">
+    {%csrf_token%}
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <h2>Create Your Private Space</h2>
+      <label for="dob" class="dob-label">Username</label>
+      <input type="text" id="username" placeholder="Username" required>
+      <label for="dob" class="dob-label">Email</label>
+      <input type="email" id="email" placeholder="Email" required>
+      <label for="dob" class="dob-label">Password</label>
+      <input type="password" id="password" placeholder="Password" required>
+
+      <label style="font-size:14px;">
+  <input type="checkbox" id="adultConfirm">
+  I confirm that I am 18 years or older
+</label>
+
+      <button id="submitSignup">Sign Up</button>
+      <p>Already have an account? <span id="switchLogin" class="pink">Login</span></p>
+      <p>Your space may reset occasionally.</p>
+    </div>
+  </div>
+
+<div id="loginModal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="closeLogin">&times;</span>
+    <h2>Return to Your Private Space</h2>
+     <label for="dob" class="dob-label">Username</label>
+    <input type="text" id="login_username" placeholder="Username or Email">
+     <label for="dob" class="dob-label">Password</label>
+    <input type="password" id="login_password" placeholder="Password">
+
+    <button id="loginBtn">Login</button>
+    <p style="font-size:14px;color:#aaa;">
+Continue where your thoughts left off.
+</p>
+  </div>
+</div>
+  <script>
+// -----------------------------
+// MODALS
+// -----------------------------
+
+const signupModal = document.getElementById("signupModal");
+const loginModal = document.getElementById("loginModal");
+
+const openSignup = document.getElementById("openSignup");
+const openLogin = document.getElementById("openLogin");
+
+const closeSignup = document.getElementById("closeModal");
+const closeLogin = document.getElementById("closeLogin");
+
+
+// OPEN MODALS
+openSignup.onclick = () => signupModal.classList.add("show");
+openLogin.onclick = () => loginModal.classList.add("show");
+
+
+// CLOSE MODALS
+closeSignup.onclick = () => signupModal.classList.remove("show");
+closeLogin.onclick = () => loginModal.classList.remove("show");
+
+
+// CLICK OUTSIDE CLOSE
+window.onclick = (e) => {
+  if (e.target === signupModal) signupModal.classList.remove("show");
+  if (e.target === loginModal) loginModal.classList.remove("show");
+};
+
+document.getElementById("switchLogin").onclick = () => {
+  signupModal.classList.remove("show");
+  loginModal.classList.add("show");
+};
+
+function showHeartNotePopup(title, message, onConfirm = null, confirmText = "OK") {
+
+    const popup = document.getElementById("hn-popup");
+
+    document.getElementById("hn-popup-title").innerText = title;
+    document.getElementById("hn-popup-message").innerText = message;
+
+    const confirmBtn = document.getElementById("hn-popup-confirm");
+    confirmBtn.innerText = confirmText;
+
+    confirmBtn.onclick = () => {
+        closeHeartNotePopup();
+        if (onConfirm) onConfirm();
+    };
+
+    popup.classList.remove("hidden");
+
+    setTimeout(() => {
+        popup.classList.add("show");
+    }, 10);
+}
+function closeHeartNotePopup() {
+
+    const popup = document.getElementById("hn-popup");
+
+    popup.classList.remove("show");
+
+    setTimeout(() => {
+        popup.classList.add("hidden");
+    }, 200);
+}
+// -----------------------------
+// SIGNUP PROCESS
+// -----------------------------
+
+const submitBtn = document.getElementById("submitSignup");
+
+submitBtn.onclick = async () => {
+
+  const username = document.getElementById("username").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const adultConfirm = document.getElementById("adultConfirm").checked;
+
+  if (!username || !email || !password) {
+    showHeartNotePopup(
+      "Hold on",
+      "Please fill all the fields before continuing."
+    );
+    return;
+  }
+
+  if (!adultConfirm) {
+    showHeartNotePopup(
+      "One more step",
+      "Please confirm that you are 18 or older."
+    );
+    return;
+  }
+
+  localStorage.setItem("heartnote_username", username);
+  localStorage.setItem("email", email);
+
+  const form = new FormData();
+  form.append("username", username);
+  form.append("email", email);
+  form.append("password", password);
+
+  const res = await fetch("/api/signup/", {
+    method: "POST",
+    body: form
+  });
+
+  const data = await res.json();
+
+  if (data.error) {
+    showHeartNotePopup(
+      "Signup issue",
+      data.error
+    );
+    return;
+  }
+
+  signupModal.classList.remove("show");
+  loginModal.classList.add("show");
+
+  showHeartNotePopup(
+    "Account created",
+    "Your account is ready. You can log in now.",
+    null,
+    "Okay"
+  );
+};
+
+
+// -----------------------------
+// LOGIN PROCESS
+// -----------------------------
+
+const loginBtn = document.getElementById("loginBtn");
+
+loginBtn.onclick = async () => {
+
+  const username = document.getElementById("login_username").value.trim();
+  const password = document.getElementById("login_password").value.trim();
+
+  if (!username || !password) {
+    showHeartNotePopup(
+      "Missing details",
+      "Please enter your username or email and your password."
+    );
+    return;
+  }
+
+  const form = new FormData();
+  form.append("username", username);
+  form.append("password", password);
+
+  const res = await fetch("/api/login/", {
+    method: "POST",
+    body: form
+  });
+
+  const data = await res.json();
+
+  if (data.error) {
+    showHeartNotePopup(
+      "Login failed",
+      data.error
+    );
+    return;
+  }
+
+  window.location.href = "/dashboard/";
+};
+  </script>
+</body>
+
+</html>
