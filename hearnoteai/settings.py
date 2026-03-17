@@ -51,7 +51,7 @@ CSRF_COOKIE_SECURE = True
   
 IS_PRODUCTION = os.environ.get("RENDER", False)  
   
-Application definition  
+
   
 INSTALLED_APPS = [  
   
