@@ -1,8 +1,9 @@
 import requests
 from datetime import datetime
+import os
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL_NAME = "llama3.2:3b"
+GEMINI_MODEL = "gemini-2.5-flash"
+
 
 
 
@@ -10,9 +11,9 @@ MODEL_NAME = "llama3.2:3b"
 # TONE DEPTH MAP
 # -----------------------------------------------------
 DEPTH_TONE = {
-    "light": "simple, gentle, easy-to-understand emotional language",
-    "medium": "clear, honest, emotionally calm language",
-    "deep": "deep but simple emotions, clear words, no complex vocabulary"
+    "light": "gentle and simple",
+    "medium": "clear and calm",
+    "deep": "emotionally intense but concrete"
 }
 
 SUPPORTED_LANGUAGES = {
@@ -28,80 +29,36 @@ SUPPORTED_LANGUAGES = {
 # -----------------------------------------------------
 
 DASHBOARD_REFLECTION = """
-You are HeartNote Reflection Writer.
+Write a simple emotional reflection in {language}.
 
-Write the response in {language}.
+Topic: {name}
+Feeling: {desc}
+Style: {tone}
 
-Write a simple, emotional reflection that feels human and relatable.
-
-INPUT:
-- Topic: {name}
-- Feeling: {desc}
-- Tone: {tone}
-
-RULES:
+Rules:
 - Two paragraphs
-- Paragraph 1: 25–35 words
-- Paragraph 2: 15–25 words
-- Use simple, clear language
--If the input is vague, do not invent new events.
-Keep the writing simple and general.
--- Do not include realizations or life conclusions.
-- Focus only on the moment.
-- Avoid complex or poetic vocabulary
-- Emotional but natural tone
-- Do NOT use phrases like:
-  “special moment”
-  “meant a lot”
-  “deeply moved”
-  “everything happens for a reason”
-  “ups and downs”
-- Use specific actions or details instead.
-- No advice
-- No motivation
-- No emojis
+- 40–55 words total
+- Focus only on the moment
+- No advice or life lessons
+- No dramatic language
 
-Generate only the reflection.
+Return only the reflection.
 """
 
 
 DASHBOARD_LETTER = """
-You are HeartNote Letter Writer.
+Write a short emotional letter in {language}.
 
-Write the response in {language}.
-
-INPUT:
 Recipient: {name}
 Feeling: {desc}
-Tone depth: {tone}
+Style: {tone}
 
-RULES:
-- Write exactly 2 paragraphs
-- Paragraph 1: 25–35 words
-- Paragraph 2: 15–25 words
-- Use simple, clear emotional language
-- Gentle and honest tone
-- Avoid dramatic phrases.
-- Avoid emotional clichés.
-- Emotional but natural, not dramatic
-- Avoid complex or rare words
--If the input is vague, do not invent new events.
-Keep the writing simple and general.
-- No advice
-- No moralizing
-- Do NOT use phrases like:
-  “special moment”
-  “meant a lot”
-  “deeply moved”
-  “everything happens for a reason”
-  “ups and downs”
-- Use specific actions or details instead.
-- No judgement
-- No motivational tone
-- No lists
-- No emojis
+Rules:
+- Two short paragraphs
+- 40–55 words total
+- Simple, honest language
+- No advice or moral tone
 
-Format:
 Start with:
 Dear You,
 """
@@ -110,220 +67,130 @@ Dear You,
 
 
 DASHBOARD_POEM = """
-You are HeartNote Poem Writer.
+Write a short free-verse poem in {language}.
 
-Write the response in {language}.
-
-Write a gentle emotional poem inspired by:
+Inspired by:
 {name} — {desc}
+Style: {tone}
 
-RULES:
+Rules:
 - 5–7 short lines
-- Free verse
-- Calm, emotional, human language
-- Focus on feeling, not explanation
+- Concrete imagery
 - No advice
-- Use physical images (hands, room, light, chair, rain)
-- Avoid abstract words like destiny, forever, soul, heartache.
--If the input is vague, do not invent new events.
-Keep the writing simple and general.
-- Do NOT use phrases like:
-  “special moment”
-  “meant a lot”
-  “deeply moved”
-  “everything happens for a reason”
-  “ups and downs”
-- Use specific actions or details instead.
-- No motivation
-- No emojis
+- No abstract philosophy
 
-Generate only the poem.
+Return only the poem.
 """
+
+
 
 DASHBOARD_STORY = """
-You are HeartNote Story Writer.
+Write a short emotional micro-story in {language}.
 
-Write the response in {language}.
-
-Write a short emotional micro-story inspired by:
+Inspired by:
 {name} — {desc}
+Style: {tone}
 
-RULES:
-- 45–70 words
+Rules:
+- 45–65 words
 - One emotional moment
-- Simple, human language
-- Do NOT use phrases like:
-  “special moment”
-  “meant a lot”
-  “deeply moved”
-  “everything happens for a reason”
-  “ups and downs”
-- Use specific actions or details instead.
-- Soft emotional ending
-- End with a small physical detail instead of a life conclusion.
--If the input is vague, do not invent new events.
-Keep the writing simple and general.
-- No advice
-- No lessons
-- No emojis
+- End with a small physical detail
+- No moral or lesson
 
-Generate only the story.
+Return only the story.
 """
+
+
 
 
 DASHBOARD_JOURNAL = """
-You are HeartNote Journal Writer.
+Write a calm journal entry in {language}.
 
-Write the response in {language}.
+Topic: {name}
+Feeling: {desc}
+Style: {tone}
 
-Write a calm emotional journal entry.
+Rules:
+- Two paragraphs
+- 40–55 words total
+- Reflective and neutral
+- No advice or lessons
 
-INPUT:
-- Topic/person: {name}
-- Feeling: {desc}
-
-RULES:
-- Write exactly 2 paragraphs
-- Paragraph 1: 25–35 words
-- Paragraph 2: 15–25 words
--If the input is vague, do not invent new events.
-Keep the writing simple and general.
-- Do NOT use phrases like:
-  “special moment”
-  “meant a lot”
-  “deeply moved”
-  “everything happens for a reason”
-  “ups and downs”
-- Use specific actions or details instead.
-- Do not begin with “Today was…”
-- Reflective, neutral tone
-- No advice
-- No lessons
-- No emojis
-- No signature
-
-Format:
 Start with:
 Date: {date}
-
-<journal entry>
-
 """
 
 DASHBOARD_MESSAGES = """
-You are HeartNote Message Writer.
+Write a short emotional message in {language}.
 
-Write the response in {language}.
+Message for:
+{name}
 
-Write a short emotional message someone might want to send.
+Feeling or context:
+{desc}
 
-INPUT:
-- Person: {name}
-- Feeling: {desc}
-- Tone depth: {tone}
+Style: {tone}
 
-RULES:
+Rules:
+- 25–45 words
+- Honest and simple tone
 - 1–2 short paragraphs
-- Total length: 25–45 words
-- Simple, natural language
-- Honest but calm tone
 - Focus on what the person wants to say
--If the input is vague, do not invent new events.
-Keep the writing simple and general.
-- Do NOT use phrases like:
-  “special moment”
-  “meant a lot”
-  “deeply moved”
-  “everything happens for a reason”
-  “ups and downs”
 - No advice
-- No life lessons
-- No emojis
+- No motivational tone
+- Avoid dramatic language
 
-Generate only the message.
+Return only the message.
 """
 
 DASHBOARD_MEMORIES = """
-You are HeartNote Memory Writer.
+Write a short memory reflection in {language}.
 
-Write the response in {language}.
+Memory about:
+{name}
 
-Write a short emotional memory reflection.
+Feeling or context:
+{desc}
 
-INPUT:
-- Memory topic: {name}
-- Feeling: {desc}
-- Tone depth: {tone}
+Style: {tone}
 
-RULES:
-- Exactly 2 paragraphs
-- Paragraph 1: 25–35 words
-- Paragraph 2: 15–25 words
+Rules:
+- Two short paragraphs
+- 40–60 words total
 - Focus on a past moment
-- Describe a small detail or scene
--If the input is vague, do not invent new events.
-Keep the writing simple and general.
-- Do NOT use phrases like:
-  “special moment”
-  “meant a lot”
-  “deeply moved”
-  “everything happens for a reason”
-  “ups and downs”
-- No advice
-- No life lessons
-- No motivational tone
-- No emojis
+- Describe one small detail from the scene
+- Calm and reflective tone
+- No life lesson or advice
 
-Generate only the memory reflection.
+Return only the reflection.
 """
 
 DASHBOARD_CHECKIN = """
-You are HeartNote Gentle Check-In Writer.
+Write a gentle emotional check-in in {language}.
 
-Write the response in {language}.
+Focus:
+{name}
 
-Write a short weekly emotional reflection based on the user's writing theme.
+Current feeling:
+{desc}
 
-INPUT:
-- Focus: {name}
-- Feeling context: {desc}
+Rules:
+- Two short paragraphs
+- 35–55 words total
+- Calm and reflective tone
+- Focus on awareness, not solutions
+- No advice or motivation
+- Simple human language
 
-RULES:
-- Write exactly 2 short paragraphs
-- Paragraph 1: 25–35 words
-- Paragraph 2: 15–25 words
-- Calm, reflective tone
-- Focus on awareness, not advice
-- Do NOT give solutions or guidance
-- Do NOT sound like therapy
-- Avoid dramatic or poetic language
-- Use simple human words
--If the input is vague, do not invent events.
-Keep the reflection general.
-- Do NOT use phrases like:
-  “everything happens for a reason”
-  “stay strong”
-  “life lesson”
-  “ups and downs”
-- No advice
-- No motivation
-- No emojis
-
-Goal:
-A quiet moment of emotional awareness.
-
-Generate only the reflection.
+Return only the reflection.
 """
-
-
-
 
 # -----------------------------------------------------
 # LLM SERVICE
 # -----------------------------------------------------
 class Dashboard_LLM_Service:
 
-    def __init__(self, model=MODEL_NAME):
+    def __init__(self, model=GEMINI_MODEL):
         self.model = model
 
     # -------------------------------------------------
@@ -335,84 +202,93 @@ class Dashboard_LLM_Service:
         raw_lang = (language or "en").lower().strip()
         language = SUPPORTED_LANGUAGES.get(raw_lang, "English")
         tone = DEPTH_TONE.get(depth, DEPTH_TONE["light"])
-
-        # 1️⃣ Safety filter (ONLY for bad words / self-harm)
         safe, safe_message = self.safety_filter(desc)
         if not safe:
             return {
-                "response": safe_message,
-                "blocked": True,
-                "is_fallback":False
-            }
-
-        # 2️⃣ Template selection
+            "response": safe_message,
+            "blocked": True,
+            "is_fallback": False}
         template = self.get_template(mode)
         if not template:
             return {
-                "response": "This writing mode is not available right now.",
-                "blocked": False,
-                'is_fallback':True
-            }
-
-        # 3️⃣ Prompt build
+            "response": "This writing mode is not available right now.",
+            "blocked": False,
+            "is_fallback": True}
         date = datetime.now().strftime("%d/%m/%Y")
-
         try:
             prompt = template.format(
-                name=name,
-                desc=desc,
-                tone=tone,
-                depth=depth,
-                language=language,
-                date=date
-            )
+            name=name,
+            desc=desc,
+            tone=tone,
+            depth=depth,
+            language=language,
+            date=date)
         except Exception:
-            prompt = template.format(name=name, desc=desc, tone=tone,language=language)
-
+            prompt = template.format(
+            name=name,
+            desc=desc,
+            tone=tone,
+            language=language)
+        
         full_prompt = f"[LANG={language}]\n{prompt}"
-
-        # 4️⃣ Ollama call (GUARANTEED STRING RETURN)
         try:
+            api_key = os.getenv("GEMINI_API_KEY")
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={api_key}"
+            headers = {
+            "Content-Type": "application/json"}
             payload = {
-                "model": self.model,
-                "prompt": full_prompt,
-                "stream": False,
-                "options": {"temperature": 0.6}
-            }
-
-            res = requests.post(OLLAMA_URL, json=payload, timeout=30)
+            "contents": [
+                {
+                    "parts": [
+                        {"text": full_prompt}
+                    ]
+                }
+            ],
+            "generationConfig": {
+                "temperature": 0.6,
+                "topP": 0.9,
+                "maxOutputTokens": 2000
+            }}
+            res = requests.post(url, headers=headers, json=payload, timeout=30)
             res.raise_for_status()
-
-            raw = res.json().get("response")
-
-            # ✅ HARD GUARANTEE
+            data = res.json()
+            raw = data["candidates"][0]["content"]["parts"][0]["text"]
             if not isinstance(raw, str) or not raw.strip():
                 return {
                 "response": (
-                "The words feel quiet right now.\n\n"
-                "Some feelings take a moment before they find language."
+                    "The words feel quiet right now.\n\n"
+                    "Some feelings take a moment before they find language."
                 ),
-        "blocked": False,
-        "is_fallback": True
-    }
-
-
+                "blocked": False,
+                "is_fallback": True
+            }
             return {
-    "response": raw.strip(),
-    "blocked": False,
-    "is_fallback": False
-}
-
-
+            "response": raw.strip(),
+            "blocked": False,
+            "is_fallback": False}
+        except requests.exceptions.HTTPError as e:
+            if e.response is not None and e.response.status_code == 429:
+                return {
+                "response": "⚠️ Too many requests. Please wait a moment and try again.",
+                "blocked": True,
+                "is_fallback": False}
+            return {
+            "response": (
+                "The thoughts are still forming.\n\n"
+                "Please try again in a moment."
+            ),
+            "blocked": False,
+            "is_fallback": False}
         except Exception:
             return {
-        "response": (
-            "The thoughts are still forming.\n\n"
-            "Please try again in a moment."
-        ),
-        "blocked": False,
-        "is_fallback": False
-    }
+            "response": (
+                "The thoughts are still forming.\n\n"
+                "Please try again in a moment."
+            ),
+            "blocked": False,
+            "is_fallback": False}
+
+
 
 
     # -------------------------------------------------
@@ -428,7 +304,6 @@ class Dashboard_LLM_Service:
             "messages": DASHBOARD_MESSAGES,
             "memories": DASHBOARD_MEMORIES,
             "checkin": DASHBOARD_CHECKIN
-
         }.get(mode)
 
     # -------------------------------------------------
