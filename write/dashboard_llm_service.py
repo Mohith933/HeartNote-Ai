@@ -278,7 +278,8 @@ class Dashboard_LLM_Service:
                 "Please try again in a moment."
             ),
             "blocked": False,
-            "is_fallback": False}
+            "is_fallback": False
+            }
         except Exception:
             return {
             "response": (
@@ -286,7 +287,8 @@ class Dashboard_LLM_Service:
                 "Please try again in a moment."
             ),
             "blocked": False,
-            "is_fallback": True}
+            "is_fallback": False
+            }
 
 
 
