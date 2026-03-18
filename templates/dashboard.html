@@ -2344,35 +2344,23 @@ document.addEventListener("DOMContentLoaded", loadProfile);
             
       document.addEventListener("DOMContentLoaded", async () => {
 
-    const DEFAULT_AVATAR = "/static/default-avatar.png";
-
     const profileAvatar = document.getElementById("profileAvatar");
     const dashboardAvatar = document.getElementById("dashboardAvatar");
     const input = document.getElementById("avatarInput");
 
-    // 🔹 Load avatar from server
-    try {
-        const res = await fetch("/api/avatar/");
-        const data = await res.json();
+    // Load avatar from server
+    const res = await fetch("/api/avatar/");
+    const data = await res.json();
 
-        const avatarUrl = data.avatar ? data.avatar : DEFAULT_AVATAR;
-
-        if (profileAvatar) profileAvatar.src = avatarUrl;
-        if (dashboardAvatar) dashboardAvatar.src = avatarUrl;
-
-    } catch (error) {
-        // If API fails → fallback
-        if (profileAvatar) profileAvatar.src = DEFAULT_AVATAR;
-        if (dashboardAvatar) dashboardAvatar.src = DEFAULT_AVATAR;
+    if (data.avatar) {
+        if (profileAvatar) profileAvatar.src = data.avatar;
+        if (dashboardAvatar) dashboardAvatar.src = data.avatar;
     }
 
-    // Stop if elements not present
     if (!profileAvatar || !input) return;
 
-    // 🔹 Click avatar → open file picker
     profileAvatar.addEventListener("click", () => input.click());
 
-    // 🔹 Upload new avatar
     input.addEventListener("change", async () => {
 
         const file = input.files[0];
@@ -2381,23 +2369,16 @@ document.addEventListener("DOMContentLoaded", loadProfile);
         const form = new FormData();
         form.append("avatar", file);
 
-        try {
-            const res = await fetch("/api/upload-avatar/", {
-                method: "POST",
-                body: form
-            });
+        const res = await fetch("/api/upload-avatar/", {
+            method: "POST",
+            body: form
+        });
 
-            const data = await res.json();
+        const data = await res.json();
 
-            const newAvatar = data.avatar_url ? data.avatar_url : DEFAULT_AVATAR;
-
-            profileAvatar.src = newAvatar;
-            if (dashboardAvatar) dashboardAvatar.src = newAvatar;
-
-        } catch (error) {
-            // Upload failed → fallback
-            profileAvatar.src = DEFAULT_AVATAR;
-            if (dashboardAvatar) dashboardAvatar.src = DEFAULT_AVATAR;
+        if (data.avatar_url) {
+            profileAvatar.src = data.avatar_url;
+            if (dashboardAvatar) dashboardAvatar.src = data.avatar_url;
         }
 
     });
