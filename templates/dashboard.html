@@ -2338,7 +2338,7 @@ document.addEventListener("DOMContentLoaded", loadProfile);
         }
 
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register("{% static 'pwa/service-worker.js' %}");
+            navigator.serviceWorker.register("/static/pwa/service-worker.js");
         }
 
             
