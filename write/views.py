@@ -105,7 +105,10 @@ def upload_avatar(request):
     if not user_id:
         return JsonResponse({"error": "Not logged in"}, status=403)
 
-    user = HeartUser.objects.get(id=user_id)
+    user = HeartUser.objects.filter(id=user_id).first()
+
+    if not user:
+        return JsonResponse({"error": "User not found"}, status=404)
 
     if "avatar" in request.FILES:
         user.avatar = request.FILES["avatar"]
@@ -118,19 +121,32 @@ def upload_avatar(request):
 
     return JsonResponse({"error": "No file"})
 
-@csrf_exempt
 def get_avatar(request):
+
+    DEFAULT_AVATAR = "/static/default-avatar.png"
 
     user_id = request.session.get("user_id")
 
     if not user_id:
-        return JsonResponse({"avatar": None})
+        return JsonResponse({"avatar": DEFAULT_AVATAR})
 
-    user = HeartUser.objects.get(id=user_id)
+    user = HeartUser.objects.filter(id=user_id).first()
 
-    return JsonResponse({
-        "avatar": user.avatar.url if user.avatar else None
-    })
+    if not user or not user.avatar:
+        return JsonResponse({"avatar": DEFAULT_AVATAR})
+
+    # 🔍 Check if file actually exists (Render issue fix)
+    try:
+        avatar_path = user.avatar.path
+
+        if os.path.exists(avatar_path):
+            return JsonResponse({"avatar": user.avatar.url})
+        else:
+            return JsonResponse({"avatar": DEFAULT_AVATAR})
+
+    except:
+        # If any error (file missing, path issue)
+        return JsonResponse({"avatar": DEFAULT_AVATAR})
 
 @csrf_exempt
 def profile_api(request):
@@ -243,7 +259,6 @@ def save_writing(request):
 
 
 
-@csrf_exempt
 def get_writings(request):
 
     user_id = request.session.get("user_id")
