@@ -56,10 +56,8 @@ User Input → Backend (Django) → AI API → Response Processing → UI Displa
 
 ## 📸 Screenshots
 
-<!-- Add screenshots here later -->
-<!-- Example:
-![Home](./screenshots/home.png)
--->
+<img src = "/static/screenshots/home.png" width="600" />
+<img src = "/static/screenshots/dashboard.png" width="600" />
 
 ---
 
