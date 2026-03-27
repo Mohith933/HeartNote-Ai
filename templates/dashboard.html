@@ -970,6 +970,27 @@
             padding: 10px;
             border-radius: 10px;
         }
+           .checkin-box {
+    background:var(--card);
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.checkin-box h3{
+    margin-top:10px;
+    margin-bottom:10px;
+}
+
+.checkin-buttons button {
+    margin: 5px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    background:var(--accent);
+    color: var(--text);
+    cursor: pointer;
+}
 
         @media(max-width:768px) {
             .sidebar {
@@ -1056,10 +1077,10 @@
                     <div class="dropdown-content">
                         <a href="#" onclick="confirmExitWhileWriting(() => openTool('Letters')); setActiveMenu(this)">💌
                             Letters</a>
-                        <a href="#" onclick="confirmExitWhileWriting(() => openTool('Poems')); setActiveMenu(this)">🪶
+                        <!-- <a href="#" onclick="confirmExitWhileWriting(() => openTool('Poems')); setActiveMenu(this)">🪶
                             Poems</a>
                         <a href="#" onclick="confirmExitWhileWriting(() => openTool('Story')); setActiveMenu(this)">✨
-                            Story</a>
+                            Story</a> -->
                     </div>
                 </div>
                 <div class="menu-group">
@@ -1196,7 +1217,18 @@ It guides you through moments, reactions, and reflections — so your words feel
 
         <!-- Dashboard Cards -->
         <div id="libraryView">
+              <div class="checkin-box">
+        <h3>How are you feeling today?</h3>
+
+        <div class="checkin-buttons">
+            <button onclick="quickCheckin('Calm')">😊 Calm</button>
+            <button onclick="quickCheckin('Low')">😔 Low</button>
+            <button onclick="quickCheckin('Peaceful')">😌 Peaceful</button>
+            <button onclick="quickCheckin('Confused')">😕 Confused</button>
+        </div>
+    </div>
             <h3 class="maincardname">Your Writing Tools</h3>
+            
             <div class="cards">
                 <div class="card" onclick="openTool('Letters')">
                     <div class="card-icon">💌</div>
@@ -1344,8 +1376,8 @@ It guides you through moments, reactions, and reflections — so your words feel
         function getToolIcon(name) {
     const icons = {
         "Letters": "💌",
-        "Poems": "🪶",
-        "Story": "✨",
+        // "Poems": "🪶",
+        // "Story": "✨",
         "Journal": "📔",
         "Reflection": "🌿",
         "Messages": "💬",
@@ -1400,6 +1432,15 @@ async function showRecents(){
     });
 
     container.innerHTML = html;
+}
+
+        function quickCheckin(mood) {
+    console.log("User mood:", mood);
+
+    // Redirect to Journal (or Reflection)
+    openTool('Journal');
+
+    // Optional later: pass mood to next screen
 }
         // 🧹 Delete one
        async function deleteRecent(id){
@@ -1746,36 +1787,25 @@ async function goBack() {
                     ];
                     break;
 
-                case "poems":
-                    ideas = [
-                        "A quiet evening alone",
-                        "Rain outside my window",
-                        "The last time we met",
-                        "A fading memory",
-                        "Waiting without knowing"
-                    ];
-                    break;
+                // case "poems":
+                //     ideas = [
+                //         "A quiet evening alone",
+                //         "Rain outside my window",
+                //         "The last time we met",
+                //         "A fading memory",
+                //         "Waiting without knowing"
+                //     ];
+                //     break;
 
-                case "story":
-                    ideas = [
-                        "The day everything changed",
-                        "A stranger who helped me",
-                        "A risk that scared me",
-                        "Losing something important",
-                        "Starting again from zero"
-                    ];
-                    break;
-
-                case "quotes":
-                    ideas = [
-                        "After a failure",
-                        "When no one understands",
-                        "During a hard season",
-                        "When healing feels slow",
-                        "On letting go"
-                    ];
-                    break;
-
+                // case "story":
+                //     ideas = [
+                //         "The day everything changed",
+                //         "A stranger who helped me",
+                //         "A risk that scared me",
+                //         "Losing something important",
+                //         "Starting again from zero"
+                //     ];
+                //     break;
                     case "messages":
     ideas = [
         "A thank you message",
@@ -1946,8 +1976,11 @@ break;
                 case "reflection": return "reflection";
                 case "journal": return "journal";
                 case "letters": return "letters";
-                case "poems": return "poems";
-                case "story": return "story";
+                // case "poems": return "poems";
+                // case "story": return "story";
+                case "messages": return "messages";
+                case "memories": return "memories";
+                case "checkin": return "checkin";
                 default: return "default";
             }
         }
@@ -1976,8 +2009,8 @@ break;
         { icon:"🌿", title:"Reflection", desc:"Break down a moment and understand it better.", tool:"Reflection"},
         { icon:"📔", title:"Journal", desc:"Write about your day and your thoughts.", tool:"Journal"},
         { icon:"💌", title:"Letters", desc:"Write a heartfelt letter to someone.", tool:"Letters"},
-        { icon:"🪶", title:"Poems", desc:"Express feelings through poetry.", tool:"Poems"},
-        { icon:"✨", title:"Story", desc:"Turn your thoughts into a meaningful story.", tool:"Story"},
+        // { icon:"🪶", title:"Poems", desc:"Express feelings through poetry.", tool:"Poems"},
+        // { icon:"✨", title:"Story", desc:"Turn your thoughts into a meaningful story.", tool:"Story"},
         { icon:"💬", title:"Messages", desc:"Write a message you want to say but haven’t sent.", tool:"Messages"},
         { icon:"🧠", title:"Memories", desc:"Capture a moment from the past and reflect on it.", tool:"Memories"},
         { icon:"🫶", title:"Gentle Check-In", desc:"Pause and reflect on the emotional moments of your week.", tool:"CheckIn"}
@@ -2371,7 +2404,7 @@ document.addEventListener("DOMContentLoaded", loadProfile);
 
         const res = await fetch("/api/upload-avatar/", {
             method: "POST",
-            body: form
+            body: formx
         });
 
         const data = await res.json();
