@@ -66,39 +66,39 @@ Dear You,\n\n
 
 
 
-DASHBOARD_POEM = """
-Write a short free-verse poem in {language}.
+# DASHBOARD_POEM = """
+# Write a short free-verse poem in {language}.
 
-Inspired by:
-{name} — {desc}
-Style: {tone}
+# Inspired by:
+# {name} — {desc}
+# Style: {tone}
 
-Rules:
-- 5–7 short lines
-- Concrete imagery
-- No advice
-- No abstract philosophy
+# Rules:
+# - 5–7 short lines
+# - Concrete imagery
+# - No advice
+# - No abstract philosophy
 
-Return only the poem.
-"""
+# Return only the poem.
+# """
 
 
 
-DASHBOARD_STORY = """
-Write a short emotional micro-story in {language}.
+# DASHBOARD_STORY = """
+# Write a short emotional micro-story in {language}.
 
-Inspired by:
-{name} — {desc}
-Style: {tone}
+# Inspired by:
+# {name} — {desc}
+# Style: {tone}
 
-Rules:
-- 45–65 words
-- One emotional moment
-- End with a small physical detail
-- No moral or lesson
+# Rules:
+# - 45–65 words
+# - One emotional moment
+# - End with a small physical detail
+# - No moral or lesson
 
-Return only the story.
-"""
+# Return only the story.
+# """
 
 
 
@@ -301,8 +301,8 @@ class Dashboard_LLM_Service:
             "reflection": DASHBOARD_REFLECTION,
             "letters": DASHBOARD_LETTER,
             "poems": DASHBOARD_POEM,
-            "story": DASHBOARD_STORY,
-            "journal": DASHBOARD_JOURNAL,
+            # "story": DASHBOARD_STORY,
+            # "journal": DASHBOARD_JOURNAL,
             "messages": DASHBOARD_MESSAGES,
             "memories": DASHBOARD_MEMORIES,
             "checkin": DASHBOARD_CHECKIN
