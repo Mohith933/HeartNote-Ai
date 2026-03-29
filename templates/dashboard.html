@@ -1258,7 +1258,7 @@ It guides you through moments, reactions, and reflections — so your words feel
             </div>
         </div>
 
-        <!-- Tool Workspace -->
+ 
         <!-- Tool Workspace -->
         <div id="workspaceView" class="workspace">
             <button class="back-btn" onclick="confirmExitWhileWriting(goBack)">
@@ -1269,48 +1269,30 @@ It guides you through moments, reactions, and reflections — so your words feel
                 <div class="form-section">
                     <h3 id="toolTitle">Reflection</h3>
 
-                    <label for="nameInput">Who was involved in this moment?</label>
-                    <div class="input-group">
-                        <input type="text" id="nameInput"
-                            placeholder="e.g. My sister, My best friend, My father, Myself..." required>
-                        <button class="suggest-topic" onclick="suggestName()" title="Suggest topic">💡</button>
-                    </div>
-                    <label for="descInput">What actually happened?</label>
-
-                    <div class="input-group">
-                        <textarea id="descInput" rows="4"
-                            placeholder="Describe the real moment. What happened? What was said? What did you not say?"
-                            required></textarea>
-                        <button class="suggest-felling" onclick="suggestFeeling()" title="Suggest feeling">💡</button>
-                    </div>
-                    <div id="emotionSuggestBar" class="emotion-suggest hidden">
-    <button onclick="selectEmotion('Thankful for the time you showed up when I needed help')">🙏 Grateful</button>
-    <button onclick="selectEmotion('Thinking about the nights we stayed up talking')">🫂 Nostalgic</button>
-    <button onclick="selectEmotion('Remembering how you stood by me during a hard time')">🛡️ Supported</button>
-    <button onclick="selectEmotion('Proud of how you handled something difficult')">💪 Proud</button>
+<label for="nameInput">Who is this about?</label>
+<div class="input-group">
+    <input type="text" id="nameInput"
+        placeholder="Someone important... or even yourself"
+        required>
 </div>
 
+<label for="descInput">What happened in that moment?</label>
+<div class="input-group">
+    <textarea id="descInput" rows="4"
+        placeholder="Describe what really happened. What did you feel? What stayed unsaid?"
+        required></textarea>
+</div>
 
-                    <label for="depthInput">Depth of Emotion</label> <select id="depthInput">
-                        <option value="light">Gentle</option>
-<option value="medium">Honest</option>
-<option value="deep">Raw</option>
+<label for="depthInput">How deep do you want to go?</label>
+<select id="depthInput">
+    <option value="light">Keep it light</option>
+    <option value="medium">Be honest</option>
+    <option value="deep">Say everything</option>
+</select>
 
-                    </select>
+<p class="helper-text">Take a breath. Write what feels true.</p>
 
-
-                    <button class="generate" onclick="generateContent()">Write From This Moment</button>
-
-                </div>
-
-                <div class="playground-section">
-                    <div class="playground-header">
-                        <h3>Your Writing</h3>
-                        <div class="writing-actions">
-                        <button class="copy-btn" onclick="copyText()">Copy</button>
-                        </div>
-                    </div>
-                    <div id="output" class="output">Your words from that moment will appear here.
+<button class="generate" onclick="generateContent()">Write from this moment</button>
                     </div>
                 </div>
             </div>
@@ -1755,226 +1737,6 @@ async function goBack() {
         );
     }
 }
-
-        function suggestName() {
-            // Assuming currentMode() is defined and returns the mode string (e.g., 'reflection', 'letters')
-            const mode = currentMode();
-            let ideas = [];
-
-            // These ideas are designed to work well as the "who/what" the content is FOR (the nameInput).
-            switch (mode) {
-                case "reflection":
-                    ideas = [
-                        "The mistake I learned from",
-                        "A hard decision I made",
-                        "A moment I stayed silent",
-                        "Something I outgrew",
-                        "A turning point in my life"
-                    ];
-                    break;
-
-                case "journal":
-                    ideas = [
-                        "What happened today",
-                        "A conversation I had",
-                        "Something that bothered me",
-                        "A small win today",
-                        "Something I avoided"
-                    ];
-                    break;
-
-                case "letters":
-                    ideas = [
-                        "A message I never sent",
-                        "What I wanted to say that day",
-                        "An apology I couldn’t express",
-                        "A thank you I never fully said",
-                        "Words I held back"
-                    ];
-                    break;
-
-                // case "poems":
-                //     ideas = [
-                //         "A quiet evening alone",
-                //         "Rain outside my window",
-                //         "The last time we met",
-                //         "A fading memory",
-                //         "Waiting without knowing"
-                //     ];
-                //     break;
-
-                // case "story":
-                //     ideas = [
-                //         "The day everything changed",
-                //         "A stranger who helped me",
-                //         "A risk that scared me",
-                //         "Losing something important",
-                //         "Starting again from zero"
-                //     ];
-                //     break;
-                    case "messages":
-    ideas = [
-        "A thank you message",
-        "An apology message",
-        "A message I never sent",
-        "A message to someone I miss",
-        "A supportive message for a friend"
-    ];
-    break;
-    case "memories":
-    ideas = [
-        "A moment from childhood",
-        "A memory with a close friend",
-        "A memory that still makes me smile",
-        "A lesson I learned the hard way",
-        "A moment I wish I could revisit"
-    ];
-    break;
-    case "checkin":
-    ideas = [
-        "A quiet moment this week",
-        "Something I kept thinking about",
-        "A moment I want to remember",
-        "Something I am slowly understanding",
-        "A small emotional shift"
-    ];
-break;
-
-                default:
-                    ideas = [
-                        "Something I am learning",
-                        "A recent realization",
-                        "A difficult memory",
-                        "An important lesson",
-                        "A quiet thought"
-                    ];
-            }
-
-
-            document.getElementById("nameInput").value =
-                ideas[Math.floor(Math.random() * ideas.length)];
-        }
-
-        // Keep this function IF you have individual, smaller buttons for quick stacking
-        // APPEND MODE — emotional tags
-        function selectEmotion(text) {
-            const input = document.getElementById("descInput");
-            const current = input.value.trim();
-
-            input.value = current ? current + ", " + text : text;
-            input.focus();
-        }
-
-        // REPLACE MODE — suggestion feeling (always replace)
-        function suggestFeeling() {
-            const input = document.getElementById("descInput");
-            const newSuggestion = generateSuggestionContent();
-
-            // Always replace previous text
-            input.value = newSuggestion;
-
-            input.focus();
-        }
-
-
-
-        // 📌 Helper function to move suggestion logic out of suggestFeeling
-        // 📌 Helper function to move suggestion logic out of suggestFeeling
-        function generateSuggestionContent() {
-            const mode = currentMode();
-            let emotions = [];
-
-            switch (mode) {
-                case "reflection":
-                    emotions = [
-                        "I stayed quiet even though I wanted to speak up",
-                        "I realized I was avoiding something important",
-                        "I handled it better than I expected",
-                        "I reacted emotionally and later understood why"
-                    ];
-
-                    break;
-
-                case "journal":
-                    emotions = [
-                        "Today something small affected me more than I expected",
-                        "I had a conversation that stayed in my mind",
-                        "I felt distracted and couldn’t explain why",
-                        "I noticed a pattern in my behavior today"
-                    ];
-
-                    break;
-
-                case "letters":
-                    emotions = [
-                        "I never told you how that day affected me",
-                        "There were things I wanted to say but didn’t",
-                        "I misunderstood you at that moment",
-                        "I still think about what happened between us"
-                    ];
-
-                    break;
-
-                case "poems":
-                    emotions = [
-                        "The room felt quieter than usual",
-                        "I kept replaying the same memory",
-                        "There was something unfinished in the air",
-                        "Time moved slowly that evening"
-                    ];
-
-                    break;
-
-                case "story":
-                    emotions = [
-                        "That was the moment everything shifted",
-                        "I didn’t know it would change me",
-                        "It started like any normal day",
-                        "I almost walked away but stayed"
-                    ];
-
-                    break;
-
-                    case "messages":
-    emotions = [
-        "I wanted to say something but held back",
-        "There is something I want someone to know",
-        "I’ve been thinking about reaching out",
-        "I wish I had said this earlier"
-    ];
-    break;
-
-    case "memories":
-    emotions = [
-        "Something reminded me of the past today",
-        "I remembered a moment that shaped me",
-        "A memory came back unexpectedly",
-        "I thought about how things used to be"
-    ];
-    break;
-
-    case "checkin":
-    emotions = [
-        "This week something small stayed in my thoughts",
-        "I noticed myself reflecting on a quiet moment",
-        "A feeling returned more than once this week",
-        "Something inside me felt slightly different"
-    ];
-break;
-
-                default:
-                    emotions = [
-                        "today feels quieter, slower, and more manageable",
-                        "finding comfort in small moments and simple breaths",
-                        "progress does not need to be rushed to matter",
-                        "making space for calm and gentle thoughts"
-                    ];
-            }
-
-            const randomIndex = Math.floor(Math.random() * emotions.length);
-            return emotions[randomIndex];
-        }
-
         function currentMode() {
             const tool = document.getElementById("toolTitle").innerText.toLowerCase();
 
