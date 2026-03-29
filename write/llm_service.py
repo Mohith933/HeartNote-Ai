@@ -117,7 +117,7 @@ class LLM_Service:
                 "generationConfig": {
                 "temperature": 0.9,
                 "topP": 0.9,
-                "maxOutputTokens": 300
+                "maxOutputTokens": 2000
               }
             }
         try:
