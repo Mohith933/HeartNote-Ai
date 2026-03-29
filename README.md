@@ -56,13 +56,6 @@ User Input → Backend (Django) → AI Processing → Response Formatting → UI
 
 ---
 
-## 📸 Screenshots
-
-<img src="/static/screenshots/home.png" width="1280" />
-<img src="/static/screenshots/dashboard.png" width="1280" />
-
----
-
 ## ⚙️ Setup (Local Development)
 
 ```bash
