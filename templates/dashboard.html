@@ -1166,13 +1166,6 @@
                     </select>
                 </label>
                 <label class="toggle-row">
-                    <span>Emotion Suggestions</span>
-                    <label class="switch">
-                        <input type="checkbox" id="emotionHintsToggle">
-                        <span class="slider"></span>
-                    </label>
-                </label>
-                <label class="toggle-row">
                     <span>Handwriting Style</span>
                     <select id="handwritingStyle" class="select-style">
                         <option value="default" selected>Default</option>
@@ -1862,27 +1855,7 @@ function setActiveMenu(el) {
         data.email;
 }
 
-document.addEventListener("DOMContentLoaded", loadProfile);
-
-        // === Emotion Suggestions Toggle ===
-        function updateEmotionHintsUI(enabled) {
-            const bar = document.getElementById("emotionSuggestBar");
-            if (!bar) return;
-            bar.classList.toggle("hidden", !enabled);
-        }
-
-        document.getElementById("emotionHintsToggle").addEventListener("change", (e) => {
-            const enabled = e.target.checked;
-            localStorage.setItem("emotionHints", JSON.stringify(enabled));
-            updateEmotionHintsUI(enabled);
-        });
-        // Load saved state on page load
-        document.addEventListener("DOMContentLoaded", () => {
-            const saved = JSON.parse(localStorage.getItem("emotionHints")) ?? true;
-            document.getElementById("emotionHintsToggle").checked = saved;
-            updateEmotionHintsUI(saved);
-        });
-
+document.addEventListener("DOMContentLoaded", loadProfile);           
         const THEME_COLORS = {
             light: "#ffffff",
             dark: "#141414",
